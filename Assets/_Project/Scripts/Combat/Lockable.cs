@@ -14,7 +14,24 @@ namespace Manatite.Combat
 
         public static IReadOnlyList<Lockable> All => all;
 
+        private Renderer _renderer;
+
+        private void Awake() => _renderer = GetComponentInChildren<Renderer>();
+
         private void OnEnable() => all.Add(this);
         private void OnDisable() => all.Remove(this);
+
+        /// <summary>World-space render bounds, used for line-of-sight sampling. False if no renderer.</summary>
+        public bool TryGetWorldBounds(out Bounds bounds)
+        {
+            if (_renderer != null)
+            {
+                bounds = _renderer.bounds;
+                return true;
+            }
+
+            bounds = default;
+            return false;
+        }
     }
 }

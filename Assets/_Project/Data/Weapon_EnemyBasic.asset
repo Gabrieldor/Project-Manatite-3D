@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30af6cc302bc40b45bde0b74ed0cfc01, type: 3}
+  m_Name: Weapon_EnemyBasic
+  m_EditorClassIdentifier: Manatite.Runtime::Manatite.Data.WeaponData
+  fireMode: 0
+  fireRate: 1
+  singleFireDebounce: 0.05
+  projectilePrefab: {fileID: 6884079911391522342, guid: cf859d439a400a144b57482450690477, type: 3}
+  projectileSpeed: 250
+  projectileLifetime: 3
+  damage: 10
