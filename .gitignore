@@ -109,3 +109,10 @@ InitTestScene*.unity*
 
 # Claude Code local (per-machine) settings
 .claude/settings.local.json
+
+# Unity crash-recovery scene backups (regenerated, not real content)
+/[Aa]ssets/_Recovery/
+/[Aa]ssets/_Recovery.meta
+
+# Large PSD source files kept outside Assets/ (imported textures are what's tracked)
+/skybox.psd

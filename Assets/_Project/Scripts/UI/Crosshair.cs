@@ -10,17 +10,19 @@ namespace Manatite.UI
         [SerializeField] private Camera hudCamera;
         [SerializeField] private Image centerReticle;
         [SerializeField] private RectTransform lockIndicator;
+        [SerializeField] private Sprite unlockedSprite;
         [SerializeField] private Color unlockedColor = Color.white;
-        [SerializeField] private Color lockedColor = Color.red;
 
         private void Update()
         {
             bool locked = targetLock.IsLocked;
 
-            // Update center reticle color based on lock state
+            // Center reticle only shows the unlocked crosshair; the lock indicator takes over when locked
             if (centerReticle != null)
             {
-                centerReticle.color = locked ? lockedColor : unlockedColor;
+                centerReticle.gameObject.SetActive(!locked);
+                centerReticle.sprite = unlockedSprite;
+                centerReticle.color = unlockedColor;
             }
 
             // Show/hide lock indicator

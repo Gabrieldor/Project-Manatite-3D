@@ -18,4 +18,4 @@ MonoBehaviour:
   projectilePrefab: {fileID: 6884079911391522342, guid: cf859d439a400a144b57482450690477, type: 3}
   projectileSpeed: 400
   projectileLifetime: 3
-  damage: 10
+  damage: 1

@@ -8,8 +8,8 @@ namespace Manatite.Data
     [CreateAssetMenu(fileName = "Health_", menuName = "Manatite/Health Data", order = 4)]
     public sealed class HealthData : ScriptableObject
     {
-        [SerializeField] private float maxHealth = 100f;
+        [SerializeField] private int maxHealth = 100;
 
-        public float MaxHealth => maxHealth;
+        public int MaxHealth => maxHealth;
     }
 }

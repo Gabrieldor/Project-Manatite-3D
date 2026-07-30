@@ -25,6 +25,7 @@ namespace Manatite.Weapons
         private InputAction _fire;
         private float _cooldownRemaining;
         private float _releasedFor = float.MaxValue;
+        private Collider _ownerCollider;
 
         private void Awake()
         {
@@ -32,6 +33,7 @@ namespace Manatite.Weapons
                 Debug.LogError($"{nameof(Weapon)} on '{name}' has no {nameof(WeaponData)} assigned.", this);
             if (firePoint == null)
                 Debug.LogError($"{nameof(Weapon)} on '{name}' has no fire point assigned.", this);
+            _ownerCollider = GetComponentInParent<Collider>();
 
             if (controls != null)
             {
@@ -76,7 +78,7 @@ namespace Manatite.Weapons
 
         private void Fire()
         {
-            ProjectileLauncher.Fire(data, firePoint);
+            ProjectileLauncher.Fire(data.ProjectilePrefab, data.Damage, data.ProjectileSpeed, data.ProjectileLifetime, firePoint, _ownerCollider);
             _cooldownRemaining = 1f / Mathf.Max(data.FireRate, 0.0001f);
         }
     }

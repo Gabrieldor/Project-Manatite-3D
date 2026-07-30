@@ -46,6 +46,7 @@ Art asset rules: keep a model's `.mtl` beside its `.obj` (Unity reads it at impo
 - One public type per file; filename == type name. Namespaces mirror folders (`Manatite.Weapons`).
 - Fields: `[SerializeField] private` + property/method access. No public mutable fields.
 - **Data-driven**: every tunable number (ship stats, weapon damage/fire rate, wave definitions, enemy stats) lives in a ScriptableObject — never hardcoded in a MonoBehaviour.
+- **Damage and health are always `int`**, never `float` — no partial-point damage/health anywhere (`HealthData`, `WeaponData`/`EnemyData` damage, `Health.Current`/`Max`, `TakeDamage`).
 - **Hot-path discipline**: no LINQ, no string concat, no `GetComponent`/`Find` calls inside `Update`/`FixedUpdate` — cache in `Awake`. Projectiles, enemies, VFX, and audio one-shots go through object pooling (`Core/`); never `Instantiate`/`Destroy` per shot.
 - Input **only** through the Input System actions asset — never `UnityEngine.Input` legacy API.
 - Movement/physics in `FixedUpdate` via Rigidbody; camera/visuals in `LateUpdate`.

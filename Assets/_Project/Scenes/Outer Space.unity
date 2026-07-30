@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 306584212}
   - component: {fileID: 306584215}
   m_Layer: 0
-  m_Name: Planet_12
+  m_Name: Planet_05
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -326,7 +326,7 @@ GameObject:
   - component: {fileID: 603562951}
   - component: {fileID: 603562954}
   m_Layer: 0
-  m_Name: Planet_02
+  m_Name: IcePlanet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -372,7 +372,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: adcbf985a9ac56544b9368a274fef059, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -563,7 +563,7 @@ GameObject:
   - component: {fileID: 981459663}
   - component: {fileID: 981459666}
   m_Layer: 0
-  m_Name: Planet_13
+  m_Name: Planet_06
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -742,6 +742,37 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 675
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &1049542294
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1049542295}
+  m_Layer: 0
+  m_Name: AimPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1049542295
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1049542294}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.625, z: 0.036667}
+  m_LocalScale: {x: 0.16666667, y: 0.16666667, z: 0.16666667}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 543450653321630831}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1125185470
 GameObject:
   m_ObjectHideFlags: 0
@@ -890,14 +921,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: b9eda5b1bfe452b459ef2295fef5e3db, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1273,7 +1304,7 @@ GameObject:
   - component: {fileID: 1542818758}
   - component: {fileID: 1542818761}
   m_Layer: 0
-  m_Name: Planet_11
+  m_Name: Planet_04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1420,8 +1451,8 @@ MonoBehaviour:
   hudCamera: {fileID: 1870034055}
   centerReticle: {fileID: 1688826938}
   lockIndicator: {fileID: 1248040943}
+  unlockedSprite: {fileID: 21300000, guid: 29feb3e7f57ca0e42bb342bd6c6b7b9c, type: 3}
   unlockedColor: {r: 1, g: 1, b: 1, a: 1}
-  lockedColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!114 &1560010012
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1624,7 +1655,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 29feb3e7f57ca0e42bb342bd6c6b7b9c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1675,7 +1706,7 @@ GameObject:
   - component: {fileID: 1711827272}
   - component: {fileID: 1711827275}
   m_Layer: 0
-  m_Name: Planet_01
+  m_Name: LavaPlanet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1721,7 +1752,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 015728a7ad7453242aa0af9ee1ebccec, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2183,7 +2214,7 @@ GameObject:
   - component: {fileID: 1880866871}
   - component: {fileID: 1880866874}
   m_Layer: 0
-  m_Name: Planet_14
+  m_Name: Planet_07
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2339,7 +2370,7 @@ GameObject:
   - component: {fileID: 1975644905}
   - component: {fileID: 1975644908}
   m_Layer: 0
-  m_Name: Planet_10
+  m_Name: AcidPlanet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2385,7 +2416,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 32f07bd4b05016846aa9da4dbb432fe5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2528,12 +2559,13 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 6, y: 6, z: 6}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1878452517}
   - {fileID: 1855901223}
   - {fileID: 1946476231}
+  - {fileID: 1049542295}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &919132149397901013
@@ -2549,6 +2581,8 @@ GameObject:
   - component: {fileID: 919132149397901014}
   - component: {fileID: 919132149397901016}
   - component: {fileID: 919132149397901017}
+  - component: {fileID: 919132149397901018}
+  - component: {fileID: 919132149397901019}
   m_Layer: 0
   m_Name: NavePrincipal
   m_TagString: Player
@@ -2633,6 +2667,31 @@ MonoBehaviour:
   controls: {fileID: -944628639613478452, guid: f62d2dd2a6e75be4dbdfb257699d3caa, type: 3}
   firePoint: {fileID: 1946476231}
   actionMapName: Ship
+--- !u!114 &919132149397901018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132149397901013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64aa6b3fe82084746a563c852b112e59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Manatite.Runtime::Manatite.Combat.Health
+  data: {fileID: 11400000, guid: df3b80a0c777d594b954c42e05efb212, type: 2}
+--- !u!114 &919132149397901019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132149397901013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 652d46dc56c9d2349a589f1c2777b102, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Manatite.Runtime::Manatite.Player.PlayerDeath
 --- !u!4 &1151388028925486391
 Transform:
   m_ObjectHideFlags: 0
@@ -2697,63 +2756,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1001 &1856100701773896454
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 3684099125148315627, guid: cf859d439a400a144b57482450690477, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3684099125148315627, guid: cf859d439a400a144b57482450690477, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -500
-      objectReference: {fileID: 0}
-    - target: {fileID: 3684099125148315627, guid: cf859d439a400a144b57482450690477, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3684099125148315627, guid: cf859d439a400a144b57482450690477, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3684099125148315627, guid: cf859d439a400a144b57482450690477, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3684099125148315627, guid: cf859d439a400a144b57482450690477, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3684099125148315627, guid: cf859d439a400a144b57482450690477, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3684099125148315627, guid: cf859d439a400a144b57482450690477, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3684099125148315627, guid: cf859d439a400a144b57482450690477, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3684099125148315627, guid: cf859d439a400a144b57482450690477, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6884079911391522342, guid: cf859d439a400a144b57482450690477, type: 3}
-      propertyPath: m_Name
-      value: Projectile_Basic
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: cf859d439a400a144b57482450690477, type: 3}
 --- !u!33 &2823090746161077373
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -2788,6 +2790,5 @@ SceneRoots:
   - {fileID: 543450653321630831}
   - {fileID: 1125185471}
   - {fileID: 1220851718}
-  - {fileID: 1856100701773896454}
   - {fileID: 1560010015}
   - {fileID: 1636917627}

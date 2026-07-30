@@ -27,7 +27,7 @@ namespace Manatite.Data
         [SerializeField] private float projectileSpeed = 400f;
         [Tooltip("Seconds before an unhit projectile despawns on its own.")]
         [SerializeField] private float projectileLifetime = 3f;
-        [SerializeField] private float damage = 10f;
+        [SerializeField] private int damage = 1;
 
         public WeaponFireMode FireMode => fireMode;
         public float FireRate => fireRate;
@@ -35,6 +35,6 @@ namespace Manatite.Data
         public GameObject ProjectilePrefab => projectilePrefab;
         public float ProjectileSpeed => projectileSpeed;
         public float ProjectileLifetime => projectileLifetime;
-        public float Damage => damage;
+        public int Damage => damage;
     }
 }

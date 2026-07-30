@@ -12,24 +12,29 @@ namespace Manatite.Combat
     {
         [SerializeField] private HealthData data;
 
-        public event Action<float, float> OnDamaged;
+        public event Action<int, int> OnDamaged;
         public event Action OnDied;
 
-        private float _current;
+        private int _current;
+        private int? _maxHealthOverride;
 
-        public float Current => _current;
-        public float Max => data != null ? data.MaxHealth : 0f;
+        public int Current => _current;
+        public int Max => _maxHealthOverride ?? (data != null ? data.MaxHealth : 0);
+
+        /// <summary>Lets a caller (e.g. <see cref="Manatite.Enemies.EnemyController"/>) drive max
+        /// health from its own data asset instead of assigning a <see cref="HealthData"/> here.</summary>
+        public void SetMaxHealth(int value) => _maxHealthOverride = value;
 
         private void OnEnable() => _current = Max;
 
-        public void TakeDamage(float amount)
+        public void TakeDamage(int amount)
         {
-            if (amount <= 0f || _current <= 0f) return;
+            if (amount <= 0 || _current <= 0) return;
 
-            _current = Mathf.Max(_current - amount, 0f);
+            _current = Mathf.Max(_current - amount, 0);
             OnDamaged?.Invoke(_current, Max);
 
-            if (_current <= 0f) OnDied?.Invoke();
+            if (_current <= 0) OnDied?.Invoke();
         }
     }
 }

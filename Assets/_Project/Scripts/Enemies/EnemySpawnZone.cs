@@ -33,8 +33,13 @@ private void OnTriggerEnter(Collider other)
             Rigidbody rb = other.attachedRigidbody;
             if (rb == null || !rb.CompareTag(GameLayers.PlayerTag)) return;
 
+            // Enemies aim at this instead of the ship's raw pivot: the ship's hull isn't
+            // centered on its own transform origin, so aiming at the bare pivot fires clean
+            // over/under the actual hitbox. Falls back to the pivot if no AimPoint exists.
+            Transform aimTarget = rb.transform.Find("AimPoint") ?? rb.transform;
+
             _armed = false;
-            _spawnRoutine = StartCoroutine(SpawnEncounter(rb.transform));
+            _spawnRoutine = StartCoroutine(SpawnEncounter(aimTarget));
         }
 
         private void OnDisable()

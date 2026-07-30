@@ -1,31 +1,38 @@
 using Manatite.Combat;
 using Manatite.Core;
-using Manatite.Data;
 using UnityEngine;
 
 namespace Manatite.Weapons
 {
     /// <summary>
-    /// Shared fire path for anything shooting a <see cref="WeaponData"/>-defined
-    /// projectile (player <see cref="Weapon"/>, <see cref="Manatite.Enemies.EnemyWeapon"/>).
-    /// Spawns via <see cref="ObjectPooler"/> and wires the hit to <see cref="Health"/> damage.
+    /// Shared fire path for anything shooting a projectile (player <see cref="Weapon"/>,
+    /// <see cref="Manatite.Enemies.EnemyWeapon"/>), independent of which data asset the
+    /// caller sources its stats from. Spawns via <see cref="ObjectPooler"/> and wires the
+    /// hit to <see cref="Health"/> damage.
     /// </summary>
     internal static class ProjectileLauncher
     {
-        public static void Fire(WeaponData data, Transform firePoint)
+        public static void Fire(GameObject projectilePrefab, int damage, float projectileSpeed, float projectileLifetime, Transform firePoint, Collider ownerCollider = null)
         {
-            GameObject instance = ObjectPooler.Get(data.ProjectilePrefab, firePoint.position, firePoint.rotation);
+            GameObject instance = ObjectPooler.Get(projectilePrefab, firePoint.position, firePoint.rotation);
             Projectile projectile = instance.GetComponent<Projectile>();
 
-            float damage = data.Damage;
-            projectile.OnHit += (_, collision) => ApplyDamage(collision, damage);
-            projectile.Launch(data.ProjectileSpeed, data.ProjectileLifetime);
+            projectile.IgnoreOwnerCollider(ownerCollider);
+
+            // Same-tag targets (e.g. two enemies) never damage each other, regardless of
+            // aim or how close together they end up while swarming a shared target.
+            string ownerTag = ownerCollider != null ? ownerCollider.tag : null;
+            projectile.OnHit += (_, collision) => ApplyDamage(collision, damage, ownerTag);
+            projectile.Launch(projectileSpeed, projectileLifetime);
         }
 
-        private static void ApplyDamage(Collision collision, float damage)
+        private static void ApplyDamage(Collision collision, int damage, string ownerTag)
         {
             Health health = collision.collider.GetComponentInParent<Health>();
-            if (health != null) health.TakeDamage(damage);
+            if (health == null) return;
+            if (ownerTag != null && health.CompareTag(ownerTag)) return;
+
+            health.TakeDamage(damage);
         }
     }
 }
