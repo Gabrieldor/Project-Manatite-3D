@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 330898410ac45674d97572280347e0fb, type: 3}
+  m_Name: EnemySpawn_Ice
+  m_EditorClassIdentifier: Manatite.Runtime::Manatite.Data.EnemySpawnData
+  entries:
+  - enemyPrefab: {fileID: 1518142633842074058, guid: 23fafad65b33eb641ac8c6a70c75e0ab, type: 3}
+    count: 0
+  - enemyPrefab: {fileID: 6039367295666357462, guid: 6b6d60662d8423541a8964793168994a, type: 3}
+    count: 5
+  - enemyPrefab: {fileID: 7017090798555957920, guid: e02a7fe87a75a5c4c846241c59c717bc, type: 3}
+    count: 10
+  spawnMode: 0
+  waveSize: 3
+  timeBetweenWaves: 4
+  minSpawnRadius: 500
+  maxSpawnRadius: 1000

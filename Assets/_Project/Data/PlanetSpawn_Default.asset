@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5edfa46ff4250b34aac7da643941d4e3, type: 3}
+  m_Name: PlanetSpawn_Default
+  m_EditorClassIdentifier: Manatite.Runtime::Manatite.Data.PlanetSpawnData
+  planetTypes:
+  - {fileID: 11400000, guid: fd8793828ffad5446be020e3c04bc69d, type: 2}
+  - {fileID: 11400000, guid: d312ab284a9992d459fd8a78c5539f0d, type: 2}
+  - {fileID: 11400000, guid: b2f5067a11d5daa4faf3233147cf473a, type: 2}
+  planetCount: 3
+  fieldCenter: {x: 275, y: 0, z: 137.5}
+  fieldHalfExtents: {x: 4675, y: 3300, z: 5087.5}
+  minSeparationMultiplier: 1.2
+  maxPlacementAttempts: 20

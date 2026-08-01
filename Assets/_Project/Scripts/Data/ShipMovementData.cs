@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Manatite.Data
@@ -11,6 +12,17 @@ namespace Manatite.Data
     [CreateAssetMenu(fileName = "ShipMovement_", menuName = "Manatite/Ship Movement Data", order = 0)]
     public sealed class ShipMovementData : ScriptableObject
     {
+        /// <summary>Raised whenever a field is edited (e.g. by the Balance Configurator), so
+        /// live instances can re-apply values that are otherwise only read once at spawn.</summary>
+        public event Action Changed;
+        private void OnValidate() => Changed?.Invoke();
+
+
+        [Header("Size")]
+        [Tooltip("Uniform scale applied to the ship root at spawn. Hull collider and fire " +
+                 "point are defined in root-local space, so they scale with this automatically.")]
+        [SerializeField] private float scale = 1f;
+
         [Header("Translation (accel, m/s^2)")]
         [SerializeField] private float forwardThrust = 20f;
         [SerializeField] private float strafeThrust = 15f;
@@ -43,6 +55,8 @@ namespace Manatite.Data
         [SerializeField] private float yawDamping = 0f;
         [Range(0f, 10f)] [Tooltip("Damping on roll.")]
         [SerializeField] private float rollDamping = 0f;
+
+        public float Scale => scale;
 
         public float ForwardThrust => forwardThrust;
         public float StrafeThrust => strafeThrust;

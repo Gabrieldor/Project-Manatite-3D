@@ -44,19 +44,7 @@ namespace Manatite.Player
             _rb.useGravity = useGravity;
             _rb.interpolation = interpolation;
 
-            if (data != null)
-            {
-                // Built-in damping is uniform; we damp per-axis manually in FixedUpdate.
-                _rb.linearDamping = 0f;
-                _rb.angularDamping = 0f;
-                _rb.maxAngularVelocity = data.MaxAngularSpeed > 0f
-                    ? data.MaxAngularSpeed * Mathf.Deg2Rad
-                    : 1000f;
-            }
-            else
-            {
-                Debug.LogError($"{nameof(ShipController)} on '{name}' has no {nameof(ShipMovementData)} assigned.", this);
-            }
+            ApplyData();
 
             if (controls != null)
             {
@@ -73,8 +61,38 @@ namespace Manatite.Player
             }
         }
 
-        private void OnEnable() => _shipMap?.Enable();
-        private void OnDisable() => _shipMap?.Disable();
+        private void OnEnable()
+        {
+            _shipMap?.Enable();
+            if (data != null) data.Changed += ApplyData;
+        }
+
+        private void OnDisable()
+        {
+            _shipMap?.Disable();
+            if (data != null) data.Changed -= ApplyData;
+        }
+
+        /// <summary>Applies the fields that are otherwise only read once (not every
+        /// FixedUpdate) — re-run on <see cref="ShipMovementData.Changed"/> so Balance
+        /// Configurator edits reach the ship live in Play mode, not just at spawn.</summary>
+        private void ApplyData()
+        {
+            if (data == null)
+            {
+                Debug.LogError($"{nameof(ShipController)} on '{name}' has no {nameof(ShipMovementData)} assigned.", this);
+                return;
+            }
+
+            transform.localScale = Vector3.one * data.Scale;
+
+            // Built-in damping is uniform; we damp per-axis manually in FixedUpdate.
+            _rb.linearDamping = 0f;
+            _rb.angularDamping = 0f;
+            _rb.maxAngularVelocity = data.MaxAngularSpeed > 0f
+                ? data.MaxAngularSpeed * Mathf.Deg2Rad
+                : 1000f;
+        }
 
         private void FixedUpdate()
         {

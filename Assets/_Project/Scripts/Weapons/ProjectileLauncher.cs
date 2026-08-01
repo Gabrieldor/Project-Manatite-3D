@@ -13,8 +13,11 @@ namespace Manatite.Weapons
     internal static class ProjectileLauncher
     {
         public static void Fire(GameObject projectilePrefab, int damage, float projectileSpeed, float projectileLifetime, Transform firePoint, Collider ownerCollider = null)
+            => Fire(projectilePrefab, damage, projectileSpeed, projectileLifetime, firePoint.position, firePoint.rotation, ownerCollider);
+
+        public static void Fire(GameObject projectilePrefab, int damage, float projectileSpeed, float projectileLifetime, Vector3 position, Quaternion rotation, Collider ownerCollider = null)
         {
-            GameObject instance = ObjectPooler.Get(projectilePrefab, firePoint.position, firePoint.rotation);
+            GameObject instance = ObjectPooler.Get(projectilePrefab, position, rotation);
             Projectile projectile = instance.GetComponent<Projectile>();
 
             projectile.IgnoreOwnerCollider(ownerCollider);

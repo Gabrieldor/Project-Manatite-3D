@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: EnemyData_Large
   m_EditorClassIdentifier: Manatite.Runtime::Manatite.Data.EnemyData
   maxHealth: 30
+  scale: 5
   moveSpeed: 12
   turnRate: 90
   stopDistance: 95
@@ -21,6 +22,7 @@ MonoBehaviour:
   fireRate: 1
   singleFireDebounce: 0.05
   projectilePrefab: {fileID: 6884079911391522342, guid: cf859d439a400a144b57482450690477, type: 3}
-  projectileSpeed: 250
+  projectileSpeed: 500
   projectileLifetime: 3
   damage: 1
+  scatterAngle: 0

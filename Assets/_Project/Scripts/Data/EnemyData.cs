@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Manatite.Data
@@ -10,8 +11,19 @@ namespace Manatite.Data
     [CreateAssetMenu(fileName = "EnemyData_", menuName = "Manatite/Enemy Data", order = 2)]
     public sealed class EnemyData : ScriptableObject
     {
+        /// <summary>Raised whenever a field is edited (e.g. by the Balance Configurator), so
+        /// live instances can re-apply values that are otherwise only read once at spawn.</summary>
+        public event Action Changed;
+        private void OnValidate() => Changed?.Invoke();
+
+
         [Header("Health")]
         [SerializeField] private int maxHealth = 30;
+
+        [Header("Size")]
+        [Tooltip("Uniform scale applied to the enemy root at spawn. Collider and fire point " +
+                 "are defined in root-local space, so they scale with this automatically.")]
+        [SerializeField] private float scale = 1f;
 
         [Header("Pursuit")]
         [Tooltip("Linear speed toward the target (m/s).")]
@@ -33,8 +45,11 @@ namespace Manatite.Data
         [Tooltip("Seconds before an unhit projectile despawns on its own.")]
         [SerializeField] private float projectileLifetime = 3f;
         [SerializeField] private int damage = 1;
+        [Tooltip("Half-angle (degrees) of the random aim cone applied to each shot. 0 = perfect aim.")]
+        [SerializeField] private float scatterAngle = 0f;
 
         public int MaxHealth => maxHealth;
+        public float Scale => scale;
         public float MoveSpeed => moveSpeed;
         public float TurnRate => turnRate;
         public float StopDistance => stopDistance;
@@ -46,5 +61,6 @@ namespace Manatite.Data
         public float ProjectileSpeed => projectileSpeed;
         public float ProjectileLifetime => projectileLifetime;
         public int Damage => damage;
+        public float ScatterAngle => scatterAngle;
     }
 }

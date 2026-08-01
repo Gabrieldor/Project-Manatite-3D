@@ -1,0 +1,300 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8834314b4e8719b44a71107add22e22c, type: 3}
+  m_Name: BalanceBaseline
+  m_EditorClassIdentifier: Manatite.Editor::Manatite.Editor.BalanceBaseline
+  entries:
+  - assetGuid: 4dad0db4a3f041544a9c8e304263e5bb
+    fieldName: forwardThrust
+    value: 100
+  - assetGuid: 4dad0db4a3f041544a9c8e304263e5bb
+    fieldName: strafeThrust
+    value: 150
+  - assetGuid: 4dad0db4a3f041544a9c8e304263e5bb
+    fieldName: verticalThrust
+    value: 150
+  - assetGuid: 4dad0db4a3f041544a9c8e304263e5bb
+    fieldName: maxSpeed
+    value: 5000
+  - assetGuid: 4dad0db4a3f041544a9c8e304263e5bb
+    fieldName: pitchTorque
+    value: 120
+  - assetGuid: 4dad0db4a3f041544a9c8e304263e5bb
+    fieldName: yawTorque
+    value: 120
+  - assetGuid: 4dad0db4a3f041544a9c8e304263e5bb
+    fieldName: rollTorque
+    value: 160
+  - assetGuid: 4dad0db4a3f041544a9c8e304263e5bb
+    fieldName: maxAngularSpeed
+    value: 120
+  - assetGuid: 4dad0db4a3f041544a9c8e304263e5bb
+    fieldName: forwardDamping
+    value: 1
+  - assetGuid: 4dad0db4a3f041544a9c8e304263e5bb
+    fieldName: strafeDamping
+    value: 1
+  - assetGuid: 4dad0db4a3f041544a9c8e304263e5bb
+    fieldName: verticalDamping
+    value: 1
+  - assetGuid: 4dad0db4a3f041544a9c8e304263e5bb
+    fieldName: pitchDamping
+    value: 1
+  - assetGuid: 4dad0db4a3f041544a9c8e304263e5bb
+    fieldName: yawDamping
+    value: 1
+  - assetGuid: 4dad0db4a3f041544a9c8e304263e5bb
+    fieldName: rollDamping
+    value: 1
+  - assetGuid: 983244f82a3563343b285d6c3f7f2586
+    fieldName: fireRate
+    value: 6
+  - assetGuid: 983244f82a3563343b285d6c3f7f2586
+    fieldName: singleFireDebounce
+    value: 0.05
+  - assetGuid: 983244f82a3563343b285d6c3f7f2586
+    fieldName: projectileSpeed
+    value: 400
+  - assetGuid: 983244f82a3563343b285d6c3f7f2586
+    fieldName: projectileLifetime
+    value: 3
+  - assetGuid: 983244f82a3563343b285d6c3f7f2586
+    fieldName: damage
+    value: 1
+  - assetGuid: df3b80a0c777d594b954c42e05efb212
+    fieldName: maxHealth
+    value: 10
+  - assetGuid: d5ae94eb4c1790c41a2f359df603376e
+    fieldName: maxHealth
+    value: 30
+  - assetGuid: d5ae94eb4c1790c41a2f359df603376e
+    fieldName: moveSpeed
+    value: 12
+  - assetGuid: d5ae94eb4c1790c41a2f359df603376e
+    fieldName: turnRate
+    value: 90
+  - assetGuid: d5ae94eb4c1790c41a2f359df603376e
+    fieldName: stopDistance
+    value: 28
+  - assetGuid: d5ae94eb4c1790c41a2f359df603376e
+    fieldName: leashDistance
+    value: 3000
+  - assetGuid: d5ae94eb4c1790c41a2f359df603376e
+    fieldName: fireRate
+    value: 1
+  - assetGuid: d5ae94eb4c1790c41a2f359df603376e
+    fieldName: singleFireDebounce
+    value: 0.05
+  - assetGuid: d5ae94eb4c1790c41a2f359df603376e
+    fieldName: projectileSpeed
+    value: 500
+  - assetGuid: d5ae94eb4c1790c41a2f359df603376e
+    fieldName: projectileLifetime
+    value: 3
+  - assetGuid: d5ae94eb4c1790c41a2f359df603376e
+    fieldName: damage
+    value: 1
+  - assetGuid: d5ae94eb4c1790c41a2f359df603376e
+    fieldName: scatterAngle
+    value: 0
+  - assetGuid: 52282e6f161be19459c2f875f2fb9dcc
+    fieldName: maxHealth
+    value: 30
+  - assetGuid: 52282e6f161be19459c2f875f2fb9dcc
+    fieldName: moveSpeed
+    value: 12
+  - assetGuid: 52282e6f161be19459c2f875f2fb9dcc
+    fieldName: turnRate
+    value: 90
+  - assetGuid: 52282e6f161be19459c2f875f2fb9dcc
+    fieldName: stopDistance
+    value: 95
+  - assetGuid: 52282e6f161be19459c2f875f2fb9dcc
+    fieldName: leashDistance
+    value: 3000
+  - assetGuid: 52282e6f161be19459c2f875f2fb9dcc
+    fieldName: fireRate
+    value: 1
+  - assetGuid: 52282e6f161be19459c2f875f2fb9dcc
+    fieldName: singleFireDebounce
+    value: 0.05
+  - assetGuid: 52282e6f161be19459c2f875f2fb9dcc
+    fieldName: projectileSpeed
+    value: 500
+  - assetGuid: 52282e6f161be19459c2f875f2fb9dcc
+    fieldName: projectileLifetime
+    value: 3
+  - assetGuid: 52282e6f161be19459c2f875f2fb9dcc
+    fieldName: damage
+    value: 1
+  - assetGuid: 52282e6f161be19459c2f875f2fb9dcc
+    fieldName: scatterAngle
+    value: 0
+  - assetGuid: c1dd7716011f6474d865f002821df19d
+    fieldName: maxHealth
+    value: 30
+  - assetGuid: c1dd7716011f6474d865f002821df19d
+    fieldName: moveSpeed
+    value: 12
+  - assetGuid: c1dd7716011f6474d865f002821df19d
+    fieldName: turnRate
+    value: 90
+  - assetGuid: c1dd7716011f6474d865f002821df19d
+    fieldName: stopDistance
+    value: 45
+  - assetGuid: c1dd7716011f6474d865f002821df19d
+    fieldName: leashDistance
+    value: 3000
+  - assetGuid: c1dd7716011f6474d865f002821df19d
+    fieldName: fireRate
+    value: 1
+  - assetGuid: c1dd7716011f6474d865f002821df19d
+    fieldName: singleFireDebounce
+    value: 0.05
+  - assetGuid: c1dd7716011f6474d865f002821df19d
+    fieldName: projectileSpeed
+    value: 500
+  - assetGuid: c1dd7716011f6474d865f002821df19d
+    fieldName: projectileLifetime
+    value: 3
+  - assetGuid: c1dd7716011f6474d865f002821df19d
+    fieldName: damage
+    value: 1
+  - assetGuid: c1dd7716011f6474d865f002821df19d
+    fieldName: scatterAngle
+    value: 0
+  - assetGuid: 56ce767bbc82e144fb05ed923d6cdd23
+    fieldName: waveSize
+    value: 3
+  - assetGuid: 56ce767bbc82e144fb05ed923d6cdd23
+    fieldName: timeBetweenWaves
+    value: 4
+  - assetGuid: 56ce767bbc82e144fb05ed923d6cdd23
+    fieldName: minSpawnRadius
+    value: 500
+  - assetGuid: 56ce767bbc82e144fb05ed923d6cdd23
+    fieldName: maxSpawnRadius
+    value: 1000
+  - assetGuid: efbb1d5984760b64fbab0adb28f15052
+    fieldName: lockAcquireRadius
+    value: 0.12
+  - assetGuid: efbb1d5984760b64fbab0adb28f15052
+    fieldName: maxLockRange
+    value: 4000
+  - assetGuid: efbb1d5984760b64fbab0adb28f15052
+    fieldName: autoAimTurnRate
+    value: 150
+  - assetGuid: efbb1d5984760b64fbab0adb28f15052
+    fieldName: switchArmThreshold
+    value: 0.6
+  - assetGuid: efbb1d5984760b64fbab0adb28f15052
+    fieldName: switchReleaseThreshold
+    value: 0.3
+  - assetGuid: efbb1d5984760b64fbab0adb28f15052
+    fieldName: switchSearchRadius
+    value: 0.4
+  - assetGuid: efbb1d5984760b64fbab0adb28f15052
+    fieldName: switchConeHalfAngle
+    value: 45
+  - assetGuid: 4dad0db4a3f041544a9c8e304263e5bb
+    fieldName: scale
+    value: 6
+  - assetGuid: d5ae94eb4c1790c41a2f359df603376e
+    fieldName: scale
+    value: 1
+  - assetGuid: 52282e6f161be19459c2f875f2fb9dcc
+    fieldName: scale
+    value: 5
+  - assetGuid: c1dd7716011f6474d865f002821df19d
+    fieldName: scale
+    value: 2
+  - assetGuid: 5fae4a73cefa11f419ea4b31c0c63f90
+    fieldName: waveSize
+    value: 3
+  - assetGuid: 5fae4a73cefa11f419ea4b31c0c63f90
+    fieldName: timeBetweenWaves
+    value: 4
+  - assetGuid: 5fae4a73cefa11f419ea4b31c0c63f90
+    fieldName: minSpawnRadius
+    value: 60
+  - assetGuid: 5fae4a73cefa11f419ea4b31c0c63f90
+    fieldName: maxSpawnRadius
+    value: 120
+  - assetGuid: 9b5a7f2d63bf9ab4fab687b4367c0480
+    fieldName: waveSize
+    value: 3
+  - assetGuid: 9b5a7f2d63bf9ab4fab687b4367c0480
+    fieldName: timeBetweenWaves
+    value: 4
+  - assetGuid: 9b5a7f2d63bf9ab4fab687b4367c0480
+    fieldName: minSpawnRadius
+    value: 60
+  - assetGuid: 9b5a7f2d63bf9ab4fab687b4367c0480
+    fieldName: maxSpawnRadius
+    value: 120
+  - assetGuid: 5578799cde85c8e41af815bbc077d9a9
+    fieldName: waveSize
+    value: 3
+  - assetGuid: 5578799cde85c8e41af815bbc077d9a9
+    fieldName: timeBetweenWaves
+    value: 4
+  - assetGuid: 5578799cde85c8e41af815bbc077d9a9
+    fieldName: minSpawnRadius
+    value: 60
+  - assetGuid: 5578799cde85c8e41af815bbc077d9a9
+    fieldName: maxSpawnRadius
+    value: 120
+  - assetGuid: dc2dfd2b57b94894ab5f2fc8bbffb9d2
+    fieldName: planetCount
+    value: 3
+  - assetGuid: dc2dfd2b57b94894ab5f2fc8bbffb9d2
+    fieldName: minSeparationMultiplier
+    value: 1.2
+  - assetGuid: dc2dfd2b57b94894ab5f2fc8bbffb9d2
+    fieldName: maxPlacementAttempts
+    value: 20
+  - assetGuid: b2f5067a11d5daa4faf3233147cf473a
+    fieldName: minScale
+    value: 350
+  - assetGuid: b2f5067a11d5daa4faf3233147cf473a
+    fieldName: maxScale
+    value: 550
+  - assetGuid: b2f5067a11d5daa4faf3233147cf473a
+    fieldName: minZoneRadiusMultiplier
+    value: 1.3
+  - assetGuid: b2f5067a11d5daa4faf3233147cf473a
+    fieldName: maxZoneRadiusMultiplier
+    value: 1.8
+  - assetGuid: d312ab284a9992d459fd8a78c5539f0d
+    fieldName: minScale
+    value: 350
+  - assetGuid: d312ab284a9992d459fd8a78c5539f0d
+    fieldName: maxScale
+    value: 550
+  - assetGuid: d312ab284a9992d459fd8a78c5539f0d
+    fieldName: minZoneRadiusMultiplier
+    value: 1.3
+  - assetGuid: d312ab284a9992d459fd8a78c5539f0d
+    fieldName: maxZoneRadiusMultiplier
+    value: 1.8
+  - assetGuid: fd8793828ffad5446be020e3c04bc69d
+    fieldName: minScale
+    value: 350
+  - assetGuid: fd8793828ffad5446be020e3c04bc69d
+    fieldName: maxScale
+    value: 550
+  - assetGuid: fd8793828ffad5446be020e3c04bc69d
+    fieldName: minZoneRadiusMultiplier
+    value: 1.3
+  - assetGuid: fd8793828ffad5446be020e3c04bc69d
+    fieldName: maxZoneRadiusMultiplier
+    value: 1.8

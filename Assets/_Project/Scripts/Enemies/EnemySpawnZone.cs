@@ -26,6 +26,10 @@ namespace Manatite.Enemies
             GetComponent<SphereCollider>().isTrigger = true;
         }
 
+        /// <summary>Assigns the roster this zone spawns from, e.g. from a procedural
+        /// planet spawner picking a type-specific table at instantiation time.</summary>
+        public void Configure(EnemySpawnData data) => spawnData = data;
+
 private void OnTriggerEnter(Collider other)
         {
             if (!_armed || spawnData == null) return;
@@ -35,8 +39,8 @@ private void OnTriggerEnter(Collider other)
 
             // Enemies aim at this instead of the ship's raw pivot: the ship's hull isn't
             // centered on its own transform origin, so aiming at the bare pivot fires clean
-            // over/under the actual hitbox. Falls back to the pivot if no AimPoint exists.
-            Transform aimTarget = rb.transform.Find("AimPoint") ?? rb.transform;
+            // over/under the actual hitbox. Falls back to the pivot if no CameraMount exists.
+            Transform aimTarget = rb.transform.Find("CameraMount") ?? rb.transform;
 
             _armed = false;
             _spawnRoutine = StartCoroutine(SpawnEncounter(aimTarget));

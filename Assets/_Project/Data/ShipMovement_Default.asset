@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3567a2b5ab65be143a88c2a0080713e0, type: 3}
   m_Name: ShipMovement_Default
   m_EditorClassIdentifier: Manatite.Runtime::Manatite.Data.ShipMovementData
+  scale: 6
   forwardThrust: 100
   strafeThrust: 150
   verticalThrust: 150

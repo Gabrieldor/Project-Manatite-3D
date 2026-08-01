@@ -20,23 +20,47 @@ namespace Manatite.Enemies
         private Rigidbody _rb;
         private Health _health;
         private Transform _target;
+        private Rigidbody _targetRigidbody;
+
+        public Transform Target => _target;
+        public Vector3 TargetVelocity => _targetRigidbody != null ? _targetRigidbody.linearVelocity : Vector3.zero;
 
         private void Awake()
         {
             _rb = GetComponent<Rigidbody>();
             _rb.useGravity = false;
             _health = GetComponent<Health>();
-            if (data != null) _health.SetMaxHealth(data.MaxHealth);
+            ApplyData();
         }
 
-        private void OnEnable() => _health.OnDied += HandleDeath;
-        private void OnDisable() => _health.OnDied -= HandleDeath;
+        private void OnEnable()
+        {
+            _health.OnDied += HandleDeath;
+            if (data != null) data.Changed += ApplyData;
+        }
+
+        private void OnDisable()
+        {
+            _health.OnDied -= HandleDeath;
+            if (data != null) data.Changed -= ApplyData;
+        }
+
+        /// <summary>Applies the fields that are otherwise only read once (not every
+        /// FixedUpdate) — re-run on <see cref="EnemyData.Changed"/> so Balance Configurator
+        /// edits reach an already-spawned enemy in Play mode, not just the next spawn.</summary>
+        private void ApplyData()
+        {
+            if (data == null) return;
+            _health.SetMaxHealth(data.MaxHealth);
+            transform.localScale = Vector3.one * data.Scale;
+        }
 
         private void HandleDeath() => ObjectPooler.Release(gameObject);
 
         public void Initialize(Transform target)
         {
             _target = target;
+            _targetRigidbody = target != null ? target.GetComponentInParent<Rigidbody>() : null;
             _rb.linearVelocity = Vector3.zero;
             _rb.angularVelocity = Vector3.zero;
         }
