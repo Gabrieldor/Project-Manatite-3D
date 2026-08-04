@@ -2,7 +2,8 @@
     "name": "Manatite.Runtime",
     "rootNamespace": "Manatite",
     "references": [
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

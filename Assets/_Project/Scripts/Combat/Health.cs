@@ -25,6 +25,9 @@ namespace Manatite.Combat
         /// health from its own data asset instead of assigning a <see cref="HealthData"/> here.</summary>
         public void SetMaxHealth(int value) => _maxHealthOverride = value;
 
+        /// <summary>Sets current HP directly (e.g. restoring from a save), clamped to [0, Max].</summary>
+        public void SetCurrent(int value) => _current = Mathf.Clamp(value, 0, Max);
+
         private void OnEnable() => _current = Max;
 
         public void TakeDamage(int amount)
