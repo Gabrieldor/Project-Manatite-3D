@@ -31,29 +31,40 @@ namespace Manatite.UI
 
         private InputActionMap _shipMap;
         private InputAction _pause;
+        private InputAction _cancel;
         private bool _isPaused;
 
         private void Awake()
         {
             _shipMap = controls.FindActionMap(actionMapName, throwIfNotFound: true);
             _pause = _shipMap.FindAction("Pause", throwIfNotFound: true);
+            _cancel = _shipMap.FindAction("Cancel", throwIfNotFound: true);
         }
 
         private void OnEnable()
         {
             _pause.Enable();
             _pause.performed += OnPausePerformed;
+            _cancel.Enable();
+            _cancel.performed += OnCancelPerformed;
         }
 
         private void OnDisable()
         {
             _pause.performed -= OnPausePerformed;
             _pause.Disable();
+            _cancel.performed -= OnCancelPerformed;
+            _cancel.Disable();
         }
 
         private void OnPausePerformed(InputAction.CallbackContext ctx)
         {
             SetPaused(!_isPaused);
+        }
+
+        private void OnCancelPerformed(InputAction.CallbackContext ctx)
+        {
+            if (_isPaused) SetPaused(false);
         }
 
         private void SetPaused(bool paused)
@@ -69,13 +80,18 @@ namespace Manatite.UI
 
             foreach (var action in _shipMap.actions)
             {
-                if (action == _pause) continue;
+                if (action == _pause || action == _cancel) continue;
                 if (paused) action.Disable();
                 else action.Enable();
             }
 
-            if (paused && defaultSelected != null && EventSystem.current != null)
-                EventSystem.current.SetSelectedGameObject(defaultSelected.gameObject);
+            if (EventSystem.current != null)
+            {
+                if (paused && defaultSelected != null)
+                    EventSystem.current.SetSelectedGameObject(defaultSelected.gameObject);
+                else if (!paused)
+                    EventSystem.current.SetSelectedGameObject(null);
+            }
         }
 
         private void SetLoadGameInteractable(bool value)

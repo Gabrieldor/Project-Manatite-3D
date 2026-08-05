@@ -13,6 +13,12 @@ namespace Manatite.UI
         [SerializeField] private Sprite unlockedSprite;
         [SerializeField] private Color unlockedColor = Color.white;
 
+        private void OnDisable()
+        {
+            if (centerReticle != null) centerReticle.gameObject.SetActive(false);
+            if (lockIndicator != null) lockIndicator.gameObject.SetActive(false);
+        }
+
         private void Update()
         {
             bool locked = targetLock.IsLocked;
