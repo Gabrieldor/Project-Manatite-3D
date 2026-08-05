@@ -6768,6 +6768,7 @@ GameObject:
   - component: {fileID: 919132149397901017}
   - component: {fileID: 919132149397901018}
   - component: {fileID: 919132149397901019}
+  - component: {fileID: 919132149397901020}
   m_Layer: 0
   m_Name: NavePrincipal
   m_TagString: Player
@@ -6877,6 +6878,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 652d46dc56c9d2349a589f1c2777b102, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Manatite.Runtime::Manatite.Player.PlayerDeath
+--- !u!114 &919132149397901020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132149397901013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a041001342bdd6c4e8631a1588e7ed8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Manatite.Runtime::Manatite.Player.DamageScreenEffect
+  crackMaterial: {fileID: 2100000, guid: 4d01cddeb3488e24d9bb5aae30740022, type: 2}
+  data: {fileID: 11400000, guid: a35b63f2964daa14d9b1550ac12d38b1, type: 2}
 --- !u!4 &1151388028925486391
 Transform:
   m_ObjectHideFlags: 0
