@@ -17,7 +17,7 @@ its current, already-balanced value, instead of hunting through individual .asse
 - `Assets/_Project/Scripts/Editor/Manatite.Editor.asmdef` — editor-only asmdef referencing `Manatite.Runtime`.
 - `Assets/_Project/Scripts/Editor/BalanceBaseline.cs` (`Manatite.Editor`) — ScriptableObject
   storing one baseline float per (data asset, field name) pair — the "standard" 1.0x anchor.
-- `Assets/_Project/Data/BalanceBaseline.asset` — the baseline instance. Populated lazily: the
+- `Assets/_Project/Data/Balance/BalanceBaseline.asset` — the baseline instance. Populated lazily: the
   first time the tool sees a field it hasn't seen before, it snapshots that field's *current*
   value as its standard/1.0x point. Nothing on disk changes until the window is opened.
 - `Assets/_Project/Scripts/Editor/BalanceConfiguratorWindow.cs` (`Manatite.Editor`) — `EditorWindow`

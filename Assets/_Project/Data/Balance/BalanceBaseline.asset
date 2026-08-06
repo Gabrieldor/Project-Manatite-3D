@@ -298,3 +298,9 @@ MonoBehaviour:
   - assetGuid: fd8793828ffad5446be020e3c04bc69d
     fieldName: maxZoneRadiusMultiplier
     value: 1.8
+  - assetGuid: 2c438fa4e92b7484f9cd0aa58f452670
+    fieldName: minValue
+    value: -5
+  - assetGuid: 2c438fa4e92b7484f9cd0aa58f452670
+    fieldName: maxValue
+    value: 5

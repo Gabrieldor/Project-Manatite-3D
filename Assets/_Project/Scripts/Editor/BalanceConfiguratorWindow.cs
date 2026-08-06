@@ -15,7 +15,7 @@ namespace Manatite.Editor
     /// </summary>
     public sealed class BalanceConfiguratorWindow : EditorWindow
     {
-        private const string BaselineAssetPath = "Assets/_Project/Data/BalanceBaseline.asset";
+        private const string BaselineAssetPath = "Assets/_Project/Data/Balance/BalanceBaseline.asset";
         private const string DataFolder = "Assets/_Project/Data";
         private const float MinMultiplier = 0.1f;
         private const float MaxMultiplier = 10f;
@@ -40,7 +40,12 @@ namespace Manatite.Editor
             typeof(PlanetData),
         };
 
-        private static readonly string[] TabLabels = { "General", "Enemies", "Planets" };
+        private static readonly Type[] ChipDataTypes =
+        {
+            typeof(ChipData),
+        };
+
+        private static readonly string[] TabLabels = { "General", "Enemies", "Planets", "Chips" };
 
         private BalanceBaseline baseline;
         private Vector2 scrollPosition;
@@ -94,6 +99,7 @@ namespace Manatite.Editor
             {
                 1 => EnemyDataTypes,
                 2 => PlanetDataTypes,
+                3 => ChipDataTypes,
                 _ => GeneralDataTypes,
             };
             foreach (var dataType in dataTypes)

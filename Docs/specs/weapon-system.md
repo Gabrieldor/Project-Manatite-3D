@@ -11,7 +11,7 @@ Player holds RB to fire forward-traveling projectiles from the ship's nose; a pr
 - `Assets/_Project/Scripts/Data/WeaponData.cs` — SO: `fireMode` (Auto / Single), `fireRate` (shots/sec), `projectileSpeed`, `projectileLifetime`, `projectilePrefab`.
 - `Assets/_Project/Scripts/Weapons/Weapon.cs` — reads `Fire` action, cooldown-gated spawn via `ObjectPooler.Get`, positions/orients at a `firePoint` Transform.
 - `Assets/_Project/Scripts/Weapons/Projectile.cs` — Rigidbody-driven forward travel; lifetime timeout; `OnCollisionEnter` → despawn. Exposes `public event Action<Projectile, Collision> OnHit`, raised right before release-to-pool.
-- `Assets/_Project/Data/Weapon_Default.asset` — default tunables instance.
+- `Assets/_Project/Data/Weapons/Weapon_Default.asset` — default tunables instance.
 - `Assets/_Project/Prefabs/Weapons/Projectile_Basic.prefab` — placeholder cube, non-kinematic Rigidbody (no gravity, Continuous Dynamic CCD), BoxCollider (non-trigger).
 - `ShipControls.inputactions` — add `Fire` Button action to the `Ship` map, bound to `<Gamepad>/rightShoulder`.
 - Scene: add a `FirePoint` child transform at the ship's nose; add `Weapon` component to `NavePrincipal` wired to `Weapon_Default`, `FirePoint`, and the existing controls asset.
