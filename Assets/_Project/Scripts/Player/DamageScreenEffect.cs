@@ -20,17 +20,18 @@ namespace Manatite.Player
 
         private void Awake() => _health = GetComponent<Health>();
 
-        private void OnEnable()
-        {
-            _health.OnDamaged += HandleDamaged;
-            ApplyDamage(_health.Current, _health.Max);
-        }
+        private void OnEnable() => _health.OnDamaged += HandleDamaged;
 
         private void OnDisable()
         {
             _health.OnDamaged -= HandleDamaged;
             if (crackMaterial != null) crackMaterial.SetFloat(DamageId, 0f);
         }
+
+        // Start (not OnEnable) so this reads Health.Current after Health's own OnEnable
+        // has reset it to Max — sibling OnEnable order isn't guaranteed, but Start always
+        // runs after every object's OnEnable in the same activation.
+        private void Start() => ApplyDamage(_health.Current, _health.Max);
 
         private void HandleDamaged(int current, int max) => ApplyDamage(current, max);
 
