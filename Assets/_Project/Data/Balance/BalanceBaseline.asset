@@ -304,3 +304,27 @@ MonoBehaviour:
   - assetGuid: 2c438fa4e92b7484f9cd0aa58f452670
     fieldName: maxValue
     value: 5
+  - assetGuid: 2c438fa4e92b7484f9cd0aa58f452670
+    fieldName: modifiers[0].minValue
+    value: 0
+  - assetGuid: 2c438fa4e92b7484f9cd0aa58f452670
+    fieldName: modifiers[0].maxValue
+    value: 5
+  - assetGuid: fe0f208ec385f9e42bd0d3116ab83224
+    fieldName: modifiers[0].minValue
+    value: -0.5
+  - assetGuid: fe0f208ec385f9e42bd0d3116ab83224
+    fieldName: modifiers[0].maxValue
+    value: -0.05
+  - assetGuid: fe0f208ec385f9e42bd0d3116ab83224
+    fieldName: modifiers[1].minValue
+    value: 3
+  - assetGuid: fe0f208ec385f9e42bd0d3116ab83224
+    fieldName: modifiers[1].maxValue
+    value: 3
+  - assetGuid: fe0f208ec385f9e42bd0d3116ab83224
+    fieldName: modifiers[2].minValue
+    value: 150
+  - assetGuid: fe0f208ec385f9e42bd0d3116ab83224
+    fieldName: modifiers[2].maxValue
+    value: 150

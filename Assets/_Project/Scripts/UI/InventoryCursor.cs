@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using Manatite.Core;
+using Manatite.Player;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -9,19 +13,22 @@ namespace Manatite.UI
         private enum Panel { Equip, Inventory }
 
         private const int EquipCols = 2;
-        private const int EquipRows = 3;
+        private const int EquipRows = 2;
         private const int InventoryCols = 9;
         private const int InventoryRows = 4;
 
         [Tooltip("The ShipControls.inputactions asset containing the InventoryNav action map.")]
         [SerializeField] private InputActionAsset controls;
         [SerializeField] private string actionMapName = "InventoryNav";
-        [Tooltip("The slotcursor Image that moves between slots.")]
-        [SerializeField] private RectTransform cursorImage;
-        [Tooltip("Parent of the 6 equip slots (2 cols x 3 rows).")]
+        [Tooltip("Backing data for what's in each slot. Select picks up/places chips here.")]
+        [SerializeField] private PlayerInventory inventory;
+        [Tooltip("Parent of the 4 equip slots (2 cols x 2 rows).")]
         [SerializeField] private RectTransform equipPanel;
         [Tooltip("Parent of the 36 inventory slots (9 cols x 4 rows).")]
         [SerializeField] private RectTransform inventoryPanel;
+        [Tooltip("Steady tint applied to whichever slot the cursor is currently on.")]
+        [SerializeField] private Color cursorColor = Color.white;
+        [Tooltip("Tint a picked-up slot flashes between while held.")]
         [SerializeField] private Color blinkColor = Color.white;
         [Tooltip("Full on/off cycle length in seconds for the selected-slot blink.")]
         [SerializeField] private float blinkPeriod = 1f;
@@ -33,21 +40,46 @@ namespace Manatite.UI
         private InputAction _navigate;
         private InputAction _select;
 
+        // Cached at Awake since the hover tint and the pick-up blink both overwrite a slot's
+        // Image.color at runtime; without this, BeginBlink could capture an already-tinted
+        // color as if it were the slot's resting color.
+        private readonly Dictionary<Image, Color> _defaultColors = new Dictionary<Image, Color>();
+
         private Panel _panel;
         private int _row;
         private int _col;
         private float _moveTimer;
         private bool _isRepeating;
 
+        private Image _hoverImage;
+
+        /// <summary>Fired whenever the hovered slot's chip changes (including to/from null), for the tooltip panel.</summary>
+        public event Action<ChipInstance> OnHoverChipChanged;
+        public ChipInstance HoveredChip { get; private set; }
+
         private Image _selectedImage;
         private Color _selectedOriginalColor;
         private float _blinkTimer;
+        private (bool isEquip, int index)? _heldFrom;
 
         private void Awake()
         {
             _map = controls.FindActionMap(actionMapName, throwIfNotFound: true);
             _navigate = _map.FindAction("Navigate", throwIfNotFound: true);
             _select = _map.FindAction("Select", throwIfNotFound: true);
+
+            CacheDefaultColors(equipPanel);
+            CacheDefaultColors(inventoryPanel);
+        }
+
+        private void CacheDefaultColors(RectTransform panel)
+        {
+            if (panel == null) return;
+            for (int i = 0; i < panel.childCount; i++)
+            {
+                Image img = panel.GetChild(i).GetComponent<Image>();
+                if (img != null) _defaultColors[img] = img.color;
+            }
         }
 
         private void OnEnable()
@@ -61,15 +93,8 @@ namespace Manatite.UI
             _moveTimer = 0f;
             _isRepeating = false;
 
-            if (cursorImage != null)
-            {
-                // Panels were just activated this same frame by InventoryMenu; their GridLayoutGroups
-                // haven't rebuilt yet, so slot rects are still stale until forced here.
-                if (equipPanel != null) LayoutRebuilder.ForceRebuildLayoutImmediate(equipPanel);
-                if (inventoryPanel != null) LayoutRebuilder.ForceRebuildLayoutImmediate(inventoryPanel);
-                cursorImage.gameObject.SetActive(true);
-                UpdateCursorVisual();
-            }
+            _hoverImage = null;
+            UpdateHoverHighlight();
         }
 
         private void OnDisable()
@@ -77,7 +102,9 @@ namespace Manatite.UI
             _select.performed -= OnSelectPerformed;
             _map.Disable();
             ClearSelection();
-            if (cursorImage != null) cursorImage.gameObject.SetActive(false);
+            _heldFrom = null;
+            if (_hoverImage != null) _hoverImage.color = _defaultColors[_hoverImage];
+            _hoverImage = null;
         }
 
         private void Update()
@@ -113,7 +140,7 @@ namespace Manatite.UI
         {
             if (step.x != 0) MoveHorizontal(step.x);
             else if (step.y != 0) MoveVertical(step.y);
-            UpdateCursorVisual();
+            UpdateHoverHighlight();
         }
 
         private void MoveHorizontal(int delta)
@@ -150,36 +177,85 @@ namespace Manatite.UI
             _row = Mathf.Clamp(_row + delta, 0, rows - 1);
         }
 
+        private (bool isEquip, int index) GetCurrentSlotIndex()
+        {
+            bool isEquip = _panel == Panel.Equip;
+            int cols = isEquip ? EquipCols : InventoryCols;
+            return (isEquip, _row * cols + _col);
+        }
+
         private RectTransform GetCurrentSlot()
         {
-            RectTransform parent = _panel == Panel.Equip ? equipPanel : inventoryPanel;
-            int cols = _panel == Panel.Equip ? EquipCols : InventoryCols;
-            int index = _row * cols + _col;
+            var (isEquip, index) = GetCurrentSlotIndex();
+            RectTransform parent = isEquip ? equipPanel : inventoryPanel;
             return (RectTransform)parent.GetChild(index);
         }
 
-        private void UpdateCursorVisual()
+        /// <summary>Tints whichever slot the cursor is currently over; leaves a slot alone
+        /// while it's the one actively blinking from a pick-up (that owns its own color).</summary>
+        private void UpdateHoverHighlight()
         {
-            if (cursorImage == null) return;
-            RectTransform slot = GetCurrentSlot();
-            cursorImage.position = slot.position;
-            cursorImage.sizeDelta = slot.sizeDelta;
+            Image img = GetCurrentSlot().GetComponent<Image>();
+            if (img == _hoverImage) return;
+
+            if (_hoverImage != null && _hoverImage != _selectedImage)
+                _hoverImage.color = _defaultColors[_hoverImage];
+
+            if (img != _selectedImage)
+                img.color = cursorColor;
+
+            _hoverImage = img;
+
+            if (inventory != null)
+            {
+                var (isEquip, index) = GetCurrentSlotIndex();
+                HoveredChip = inventory.GetSlot(isEquip, index);
+                OnHoverChipChanged?.Invoke(HoveredChip);
+            }
         }
 
         private void OnSelectPerformed(InputAction.CallbackContext ctx)
         {
-            RectTransform slot = GetCurrentSlot();
-            Image img = slot.GetComponent<Image>();
+            if (inventory == null) return;
 
-            if (_selectedImage == img)
+            var current = GetCurrentSlotIndex();
+
+            if (_heldFrom == null)
             {
-                ClearSelection();
+                if (inventory.IsSlotEmpty(current.isEquip, current.index)) return;
+                _heldFrom = current;
+                BeginBlink(GetCurrentSlot());
                 return;
             }
 
+            if (_heldFrom.Value == current)
+            {
+                ClearSelection();
+                _heldFrom = null;
+                RefreshHover();
+                return;
+            }
+
+            inventory.TrySwap(_heldFrom.Value.isEquip, _heldFrom.Value.index, current.isEquip, current.index);
+            ClearSelection();
+            _heldFrom = null;
+            RefreshHover();
+        }
+
+        /// <summary>Forces the hover tint to re-apply even though the cursor hasn't moved,
+        /// needed after ClearSelection just reverted this same slot's color to default.</summary>
+        private void RefreshHover()
+        {
+            _hoverImage = null;
+            UpdateHoverHighlight();
+        }
+
+        private void BeginBlink(RectTransform slot)
+        {
+            Image img = slot.GetComponent<Image>();
             ClearSelection();
             _selectedImage = img;
-            _selectedOriginalColor = img.color;
+            _selectedOriginalColor = _defaultColors[img];
             _blinkTimer = 0f;
         }
 

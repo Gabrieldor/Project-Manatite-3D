@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 442a2615ab9e9f244baf5701d6635a98, type: 3}
+  m_Name: AudioLibrary
+  m_EditorClassIdentifier: Manatite.Runtime::Manatite.Data.AudioLibraryData
+  sfxCues:
+  - cue: 0
+    data:
+      clips: []
+      volumeRange: {x: 1, y: 1}
+      pitchRange: {x: 1, y: 1}
+  - cue: 1
+    data:
+      clips: []
+      volumeRange: {x: 1, y: 1}
+      pitchRange: {x: 1, y: 1}
+  - cue: 2
+    data:
+      clips: []
+      volumeRange: {x: 1, y: 1}
+      pitchRange: {x: 1, y: 1}
+  - cue: 3
+    data:
+      clips: []
+      volumeRange: {x: 1, y: 1}
+      pitchRange: {x: 1, y: 1}
+  musicTracks:
+  - track: 1
+    clip: {fileID: 8300000, guid: 252bd4fb2edae5848b5b909affe1b4f8, type: 3}
+    volume: 1
+  - track: 2
+    clip: {fileID: 8300000, guid: 9e7464735413cae48911a12ebe778c43, type: 3}
+    volume: 1
+  - track: 3
+    clip: {fileID: 8300000, guid: 51c2021f52cf36341999cc97bd33bd4b, type: 3}
+    volume: 1

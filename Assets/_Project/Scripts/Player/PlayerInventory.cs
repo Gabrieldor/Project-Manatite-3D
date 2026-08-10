@@ -1,0 +1,83 @@
+using System;
+using Manatite.Core;
+using Manatite.Data;
+using UnityEngine;
+
+namespace Manatite.Player
+{
+    /// <summary>
+    /// Backing data for the equip (4 slots) and inventory (36 slots) grids in
+    /// <see cref="Manatite.UI.InventoryCursor"/>. Slot index within each grid matches the
+    /// corresponding UI panel's child index. Also aggregates equipped chips into effective
+    /// stat values for gameplay systems (e.g. <see cref="Manatite.Weapons.Weapon"/>).
+    /// </summary>
+    public sealed class PlayerInventory : MonoBehaviour
+    {
+        private const int EquipSlotCount = 4;
+        private const int InventorySlotCount = 36;
+
+        [Tooltip("Chips placed directly into inventory slots 0.. at scene start (no pickup yet).")]
+        [SerializeField] private ChipData[] startingInventoryItems = Array.Empty<ChipData>();
+
+        // Allocated inline (not in Awake) so any other object's OnEnable/Awake can safely read
+        // these arrays regardless of cross-object script execution order.
+        private readonly ChipInstance[] _equipSlots = new ChipInstance[EquipSlotCount];
+        private readonly ChipInstance[] _inventorySlots = new ChipInstance[InventorySlotCount];
+
+        public event Action OnInventoryChanged;
+
+        private void Awake()
+        {
+            int count = Mathf.Min(startingInventoryItems.Length, _inventorySlots.Length);
+            for (int i = 0; i < count; i++)
+            {
+                if (startingInventoryItems[i] != null)
+                    _inventorySlots[i] = new ChipInstance(startingInventoryItems[i]);
+            }
+
+            // Listeners may have already subscribed in their own OnEnable before this Awake ran.
+            OnInventoryChanged?.Invoke();
+        }
+
+        public ChipInstance GetSlot(bool equip, int index) => SlotsFor(equip)[index];
+
+        public bool IsSlotEmpty(bool equip, int index) => GetSlot(equip, index) == null;
+
+        public void TrySwap(bool fromEquip, int fromIndex, bool toEquip, int toIndex)
+        {
+            ChipInstance[] from = SlotsFor(fromEquip);
+            ChipInstance[] to = SlotsFor(toEquip);
+            (from[fromIndex], to[toIndex]) = (to[toIndex], from[fromIndex]);
+            OnInventoryChanged?.Invoke();
+        }
+
+        /// <summary>Applies every equipped chip modifier targeting <paramref name="target"/> to <paramref name="baseValue"/>: (base + sum of flat rolls) * (1 + sum of multiplier rolls).</summary>
+        public float GetModifiedFloat(ChipStatTarget target, float baseValue)
+        {
+            float flatSum = 0f;
+            float multiplierSum = 0f;
+
+            foreach (ChipInstance chip in _equipSlots)
+            {
+                if (chip == null) continue;
+
+                ChipModifier[] modifiers = chip.Data.Modifiers;
+                for (int i = 0; i < modifiers.Length; i++)
+                {
+                    if (modifiers[i].StatTarget != target) continue;
+
+                    if (modifiers[i].ValueKind == ChipValueKind.Flat) flatSum += chip.RolledValues[i];
+                    else multiplierSum += chip.RolledValues[i];
+                }
+            }
+
+            return (baseValue + flatSum) * (1f + multiplierSum);
+        }
+
+        /// <summary>Same as <see cref="GetModifiedFloat"/> but always rounds down, for int stats (damage, health, etc.).</summary>
+        public int GetModifiedInt(ChipStatTarget target, int baseValue) =>
+            Mathf.FloorToInt(GetModifiedFloat(target, baseValue));
+
+        private ChipInstance[] SlotsFor(bool equip) => equip ? _equipSlots : _inventorySlots;
+    }
+}

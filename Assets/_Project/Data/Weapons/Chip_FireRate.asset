@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Manatite.Runtime::Manatite.Data.ChipData
   displayName: Fire Rate Chip
   icon: {fileID: 21300000, guid: 14e2443278635754d849c75b03cb4782, type: 3}
-  valueKind: 0
-  statTarget: 0
-  minValue: 0
-  maxValue: 5
-  description: Boosts the primary weapon's fire rate. Stacks with other fire rate
-    chips equipped at the same time.
+  modifiers:
+  - statTarget: 0
+    valueKind: 0
+    minValue: 0
+    maxValue: 5
+  description: Boots firerate

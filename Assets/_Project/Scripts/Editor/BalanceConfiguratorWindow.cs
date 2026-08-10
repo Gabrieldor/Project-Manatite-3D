@@ -112,6 +112,15 @@ namespace Manatite.Editor
 
         private void DrawAssetsOfType(Type dataType)
         {
+            // ChipData exposes its tunables as a ChipModifier[] rather than top-level numeric
+            // fields, so the generic reflection walk below (which only looks one level deep)
+            // would find nothing to draw for it.
+            if (dataType == typeof(ChipData))
+            {
+                DrawChipAssets();
+                return;
+            }
+
             var numericFields = dataType
                 .GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .Where(f => (f.FieldType == typeof(float) || f.FieldType == typeof(int))
@@ -159,7 +168,7 @@ namespace Manatite.Editor
                     continue;
                 }
 
-                anyChanged |= DrawField(guid, field, property);
+                anyChanged |= DrawField(guid, field.Name, ObjectNames.NicifyVariableName(field.Name), property);
             }
 
             if (anyChanged)
@@ -212,20 +221,18 @@ namespace Manatite.Editor
             EditorGUILayout.Space(8f);
         }
 
-        private bool DrawField(string guid, FieldInfo field, SerializedProperty property)
+        private bool DrawField(string guid, string fieldKey, string label, SerializedProperty property)
         {
             float currentValue = property.propertyType == SerializedPropertyType.Integer
                 ? property.intValue
                 : property.floatValue;
 
-            if (!baseline.TryGetValue(guid, field.Name, out var standard))
+            if (!baseline.TryGetValue(guid, fieldKey, out var standard))
             {
                 standard = currentValue;
-                baseline.SetValue(guid, field.Name, standard);
+                baseline.SetValue(guid, fieldKey, standard);
                 SaveBaseline();
             }
-
-            var label = ObjectNames.NicifyVariableName(field.Name);
 
             // A zero baseline has no meaningful multiplier (anything x0 stays 0) — fall back
             // to a plain editable field for these instead of a slider.
@@ -240,7 +247,7 @@ namespace Manatite.Editor
                 bool setStdOnZero = GUILayout.Button("Set std", GUILayout.Width(55f));
                 if (setStdOnZero)
                 {
-                    baseline.SetValue(guid, field.Name, currentValue);
+                    baseline.SetValue(guid, fieldKey, currentValue);
                     SaveBaseline();
                 }
 
@@ -284,7 +291,7 @@ namespace Manatite.Editor
             bool setStdClicked = GUILayout.Button("Set std", GUILayout.Width(55f));
             if (setStdClicked)
             {
-                baseline.SetValue(guid, field.Name, currentValue);
+                baseline.SetValue(guid, fieldKey, currentValue);
                 SaveBaseline();
             }
 
@@ -297,6 +304,98 @@ namespace Manatite.Editor
             }
 
             return false;
+        }
+
+        private void DrawChipAssets()
+        {
+            var guids = AssetDatabase.FindAssets($"t:{nameof(ChipData)}", new[] { DataFolder });
+            foreach (var guid in guids)
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                var asset = AssetDatabase.LoadAssetAtPath<ChipData>(path);
+                if (asset != null)
+                {
+                    DrawChipAsset(asset, guid);
+                }
+            }
+        }
+
+        private void DrawChipAsset(ChipData asset, string guid)
+        {
+            EditorGUILayout.LabelField(asset.name, EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+
+            var serializedObject = new SerializedObject(asset);
+            serializedObject.Update();
+
+            var modifiersProperty = serializedObject.FindProperty("modifiers");
+            bool anyChanged = false;
+            var minKeys = new string[modifiersProperty.arraySize];
+            var maxKeys = new string[modifiersProperty.arraySize];
+
+            for (int i = 0; i < modifiersProperty.arraySize; i++)
+            {
+                var element = modifiersProperty.GetArrayElementAtIndex(i);
+                var statTargetProperty = element.FindPropertyRelative("statTarget");
+                var valueKindProperty = element.FindPropertyRelative("valueKind");
+                var minProperty = element.FindPropertyRelative("minValue");
+                var maxProperty = element.FindPropertyRelative("maxValue");
+
+                string statTargetName = statTargetProperty.enumDisplayNames[statTargetProperty.enumValueIndex];
+                string valueKindName = valueKindProperty.enumDisplayNames[valueKindProperty.enumValueIndex];
+                EditorGUILayout.LabelField($"{statTargetName} ({valueKindName})", EditorStyles.miniBoldLabel);
+
+                minKeys[i] = $"modifiers[{i}].minValue";
+                maxKeys[i] = $"modifiers[{i}].maxValue";
+                anyChanged |= DrawField(guid, minKeys[i], "Min", minProperty);
+                anyChanged |= DrawField(guid, maxKeys[i], "Max", maxProperty);
+            }
+
+            if (anyChanged)
+            {
+                serializedObject.ApplyModifiedProperties();
+                EditorUtility.SetDirty(asset);
+            }
+
+            EditorGUILayout.BeginHorizontal();
+
+            if (GUILayout.Button("Reset all to standard", GUILayout.Width(160f)))
+            {
+                for (int i = 0; i < modifiersProperty.arraySize; i++)
+                {
+                    var element = modifiersProperty.GetArrayElementAtIndex(i);
+                    ResetToStandard(guid, minKeys[i], element.FindPropertyRelative("minValue"));
+                    ResetToStandard(guid, maxKeys[i], element.FindPropertyRelative("maxValue"));
+                }
+
+                serializedObject.ApplyModifiedProperties();
+                EditorUtility.SetDirty(asset);
+            }
+
+            if (GUILayout.Button("Set all as standard", GUILayout.Width(160f)))
+            {
+                for (int i = 0; i < modifiersProperty.arraySize; i++)
+                {
+                    var element = modifiersProperty.GetArrayElementAtIndex(i);
+                    baseline.SetValue(guid, minKeys[i], element.FindPropertyRelative("minValue").floatValue);
+                    baseline.SetValue(guid, maxKeys[i], element.FindPropertyRelative("maxValue").floatValue);
+                }
+
+                SaveBaseline();
+            }
+
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUI.indentLevel--;
+            EditorGUILayout.Space(8f);
+        }
+
+        private void ResetToStandard(string guid, string fieldKey, SerializedProperty property)
+        {
+            if (baseline.TryGetValue(guid, fieldKey, out var standard))
+            {
+                ApplyValue(property, standard);
+            }
         }
 
         private void SaveBaseline()

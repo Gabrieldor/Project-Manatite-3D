@@ -8,10 +8,12 @@ namespace Manatite.UI
         [Tooltip("The ShipControls.inputactions asset containing the ship action map.")]
         [SerializeField] private InputActionAsset controls;
         [SerializeField] private string actionMapName = "Ship";
-        [Tooltip("Root of the 4-slot equip panel (left third of the screen).")]
+        [Tooltip("Root of the 4-slot equip panel (2x2, left third of the screen).")]
         [SerializeField] private GameObject equipPanel;
         [Tooltip("Root of the 36-slot inventory panel (right two-thirds of the screen).")]
         [SerializeField] private GameObject inventoryPanel;
+        [Tooltip("Root of the tooltip panel below the equip panel.")]
+        [SerializeField] private GameObject tooltipPanel;
         [Tooltip("Disabled while the inventory is open so the reticle/lock indicator don't show over it.")]
         [SerializeField] private Crosshair crosshair;
         [Tooltip("Enabled while the inventory is open; drives its own OnEnable/OnDisable reset.")]
@@ -60,6 +62,7 @@ namespace Manatite.UI
             _isOpen = open;
             equipPanel.SetActive(open);
             inventoryPanel.SetActive(open);
+            if (tooltipPanel != null) tooltipPanel.SetActive(open);
             if (crosshair != null) crosshair.enabled = !open;
             if (cursor != null) cursor.enabled = open;
             Time.timeScale = open ? 0f : 1f;

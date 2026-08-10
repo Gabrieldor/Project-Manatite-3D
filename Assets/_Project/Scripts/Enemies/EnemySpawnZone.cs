@@ -22,7 +22,15 @@ namespace Manatite.Enemies
         [Tooltip("Seconds after an encounter finishes spawning before this zone can trigger again.")]
         [SerializeField] private float rearmCooldown = 30f;
 
+        public event System.Action OnEncounterStarted;
         public event System.Action OnEncounterCleared;
+
+        /// <summary>Fired the instant any zone (procedurally spawned or scene-placed) exists,
+        /// so listeners (e.g. <see cref="Manatite.Audio.MusicDirector"/>) don't have to find
+        /// zones at their own Awake — <see cref="Environment.PlanetSpawner"/> instantiates
+        /// planets (and their zones) in Start, which always runs after every Awake, so a
+        /// one-time FindObjectsByType at Awake would see zero zones.</summary>
+        public static event System.Action<EnemySpawnZone> AnyZoneSpawned;
 
         private bool _armed = true;
         private Coroutine _spawnRoutine;
@@ -32,6 +40,7 @@ namespace Manatite.Enemies
         private void Awake()
         {
             GetComponent<SphereCollider>().isTrigger = true;
+            AnyZoneSpawned?.Invoke(this);
         }
 
         /// <summary>Assigns the roster this zone spawns from and the radius of the planet
@@ -57,6 +66,7 @@ namespace Manatite.Enemies
             Transform aimTarget = rb.transform.Find("CameraMount") ?? rb.transform;
 
             _armed = false;
+            OnEncounterStarted?.Invoke();
             _spawnRoutine = StartCoroutine(SpawnEncounter(aimTarget));
         }
 

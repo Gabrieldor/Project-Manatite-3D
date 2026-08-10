@@ -1,17 +1,17 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Manatite.UI
 {
     public sealed class MenuCursor : MonoBehaviour
     {
-        [Tooltip("The arrow Image that points at the currently selected button.")]
-        [SerializeField] private RectTransform arrow;
-        [Tooltip("Offset from the left edge of the selected button's label text, in canvas pixels.")]
-        [SerializeField] private Vector2 offset = new Vector2(-16f, 0f);
+        [Tooltip("Steady tint applied to whichever button is currently selected.")]
+        [SerializeField] private Color selectedColor = Color.white;
 
         private GameObject _lastSelected;
+        private Graphic _tintedGraphic;
+        private Color _tintedOriginalColor;
 
         private void LateUpdate()
         {
@@ -19,42 +19,30 @@ namespace Manatite.UI
             if (selected == _lastSelected) return;
             _lastSelected = selected;
 
-            if (arrow == null) return;
-
-            if (selected == null)
+            if (_tintedGraphic != null)
             {
-                arrow.gameObject.SetActive(false);
-                return;
+                _tintedGraphic.color = _tintedOriginalColor;
+                _tintedGraphic = null;
             }
 
-            RectTransform selectedRect = selected.GetComponent<RectTransform>();
-            if (selectedRect == null)
-            {
-                arrow.gameObject.SetActive(false);
-                return;
-            }
+            if (selected == null) return;
 
-            // The layout group driving this button may not have rebuilt yet this frame
-            // (e.g. right after the menu loads), which would leave its rect stale.
-            Canvas.ForceUpdateCanvases();
+            // A SelectionGlowTarget lets a selected object (e.g. a Slider) redirect the glow
+            // onto a different Graphic (e.g. its row's label) instead of tinting itself.
+            Graphic graphic = selected.GetComponent<SelectionGlowTarget>()?.Target;
+            if (graphic == null) graphic = selected.GetComponent<Image>();
+            if (graphic == null) return;
 
-            arrow.gameObject.SetActive(true);
+            _tintedGraphic = graphic;
+            _tintedOriginalColor = graphic.color;
+            graphic.color = selectedColor;
+        }
 
-            // Labels are center-aligned within the button, so the text's actual left edge
-            // depends on its own width, not the (fixed-width) button rect.
-            RectTransform anchorRect = selectedRect;
-            float leftEdgeInset = 0f;
-            TextMeshProUGUI label = selected.GetComponentInChildren<TextMeshProUGUI>();
-            if (label != null)
-            {
-                anchorRect = label.rectTransform;
-                leftEdgeInset = -label.GetPreferredValues().x * 0.5f;
-            }
-
-            Vector3 worldOffset = arrow.parent != null
-                ? arrow.parent.TransformVector(new Vector3(leftEdgeInset + offset.x, offset.y, 0f))
-                : new Vector3(leftEdgeInset + offset.x, offset.y, 0f);
-            arrow.position = anchorRect.position + worldOffset;
+        private void OnDisable()
+        {
+            if (_tintedGraphic == null) return;
+            _tintedGraphic.color = _tintedOriginalColor;
+            _tintedGraphic = null;
         }
     }
 }

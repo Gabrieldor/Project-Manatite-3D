@@ -22,6 +22,8 @@ namespace Manatite.UI
         [Tooltip("Disabled unless a save file exists; re-checked every time the menu opens.")]
         [SerializeField] private Button loadGameButton;
         [SerializeField] private string gameplaySceneName = "Outer Space";
+        [Tooltip("If open, Cancel closes this instead of unpausing.")]
+        [SerializeField] private SettingsMenu settingsMenu;
 
         /// <summary>Matches the alpha every always-enabled menu button was authored with.
         /// This scene's disabled-looking buttons dim via a hand-painted Image alpha, not
@@ -64,6 +66,12 @@ namespace Manatite.UI
 
         private void OnCancelPerformed(InputAction.CallbackContext ctx)
         {
+            if (settingsMenu != null && settingsMenu.IsOpen)
+            {
+                settingsMenu.Close();
+                return;
+            }
+
             if (_isPaused) SetPaused(false);
         }
 

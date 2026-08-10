@@ -1,3 +1,4 @@
+using Manatite.Audio;
 using Manatite.Core.SaveSystem;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -29,6 +30,8 @@ namespace Manatite.UI
         {
             if (firstSelected != null && EventSystem.current != null)
                 EventSystem.current.SetSelectedGameObject(firstSelected.gameObject);
+
+            AudioManager.PlayMusic(MusicTrack.Menu);
         }
 
         private void SetLoadGameInteractable(bool value)

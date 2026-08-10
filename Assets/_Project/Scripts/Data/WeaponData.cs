@@ -28,6 +28,10 @@ namespace Manatite.Data
         [Tooltip("Seconds before an unhit projectile despawns on its own.")]
         [SerializeField] private float projectileLifetime = 3f;
         [SerializeField] private int damage = 1;
+        [Tooltip("Spawned at the impact point whenever an equipped chip grants a splash radius > 0.")]
+        [SerializeField] private GameObject splashVfxPrefab;
+        [Tooltip("Spawned at the impact point on every hit this weapon lands (no chip required).")]
+        [SerializeField] private GameObject hitMarkerPrefab;
 
         public WeaponFireMode FireMode => fireMode;
         public float FireRate => fireRate;
@@ -36,5 +40,7 @@ namespace Manatite.Data
         public float ProjectileSpeed => projectileSpeed;
         public float ProjectileLifetime => projectileLifetime;
         public int Damage => damage;
+        public GameObject SplashVfxPrefab => splashVfxPrefab;
+        public GameObject HitMarkerPrefab => hitMarkerPrefab;
     }
 }

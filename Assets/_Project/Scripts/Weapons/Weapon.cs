@@ -1,4 +1,5 @@
 using Manatite.Data;
+using Manatite.Player;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -26,6 +27,7 @@ namespace Manatite.Weapons
         private float _cooldownRemaining;
         private float _releasedFor = float.MaxValue;
         private Collider _ownerCollider;
+        private PlayerInventory _inventory;
 
         private void Awake()
         {
@@ -33,7 +35,11 @@ namespace Manatite.Weapons
                 Debug.LogError($"{nameof(Weapon)} on '{name}' has no {nameof(WeaponData)} assigned.", this);
             if (firePoint == null)
                 Debug.LogError($"{nameof(Weapon)} on '{name}' has no fire point assigned.", this);
-            _ownerCollider = GetComponentInParent<Collider>();
+            // The hull's physical colliders live on nested child mesh pieces (Model/Cube,
+            // Model/Cube (1)), not on this GameObject or an ancestor, so this has to search
+            // down rather than up.
+            _ownerCollider = GetComponentInChildren<Collider>();
+            _inventory = GetComponentInParent<PlayerInventory>();
 
             if (controls != null)
             {
@@ -78,8 +84,25 @@ namespace Manatite.Weapons
 
         private void Fire()
         {
-            ProjectileLauncher.Fire(data.ProjectilePrefab, data.Damage, data.ProjectileSpeed, data.ProjectileLifetime, firePoint, _ownerCollider);
-            _cooldownRemaining = 1f / Mathf.Max(data.FireRate, 0.0001f);
+            int effectiveDamage = _inventory != null
+                ? _inventory.GetModifiedInt(ChipStatTarget.Damage, data.Damage)
+                : data.Damage;
+            float effectiveSplashRadius = _inventory != null
+                ? _inventory.GetModifiedFloat(ChipStatTarget.SplashRadius, 0f)
+                : 0f;
+            float effectiveCorrosionDuration = _inventory != null
+                ? _inventory.GetModifiedFloat(ChipStatTarget.CorrosionDuration, 0f)
+                : 0f;
+            int effectiveCorrosionDps = _inventory != null
+                ? _inventory.GetModifiedInt(ChipStatTarget.CorrosionDps, 0)
+                : 0;
+
+            ProjectileLauncher.Fire(data.ProjectilePrefab, effectiveDamage, data.ProjectileSpeed, data.ProjectileLifetime, firePoint, _ownerCollider, effectiveSplashRadius, data.SplashVfxPrefab, data.HitMarkerPrefab, effectiveCorrosionDuration, effectiveCorrosionDps);
+
+            float effectiveFireRate = _inventory != null
+                ? _inventory.GetModifiedFloat(ChipStatTarget.FireRate, data.FireRate)
+                : data.FireRate;
+            _cooldownRemaining = 1f / Mathf.Max(effectiveFireRate, 0.0001f);
         }
     }
 }
