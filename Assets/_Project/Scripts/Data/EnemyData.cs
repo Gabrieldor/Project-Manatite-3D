@@ -47,6 +47,10 @@ namespace Manatite.Data
         [SerializeField] private int damage = 1;
         [Tooltip("Half-angle (degrees) of the random aim cone applied to each shot. 0 = perfect aim.")]
         [SerializeField] private float scatterAngle = 0f;
+        [Tooltip("If enabled, a fire point can only fire while the target is within Fire Point Fov Angle of the point's own forward direction. If disabled, fire points shoot regardless of which way they face.")]
+        [SerializeField] private bool requireFirePointFacing = false;
+        [Tooltip("Half-angle (degrees) of the cone, centered on each fire point's forward direction, within which it's allowed to fire. Only used when Require Fire Point Facing is enabled.")]
+        [SerializeField] private float firePointFovAngle = 90f;
 
         public int MaxHealth => maxHealth;
         public float Scale => scale;
@@ -62,5 +66,7 @@ namespace Manatite.Data
         public float ProjectileLifetime => projectileLifetime;
         public int Damage => damage;
         public float ScatterAngle => scatterAngle;
+        public bool RequireFirePointFacing => requireFirePointFacing;
+        public float FirePointFovAngle => firePointFovAngle;
     }
 }

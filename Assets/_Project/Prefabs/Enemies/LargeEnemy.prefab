@@ -25,7 +25,38 @@ Transform:
   m_GameObject: {fileID: 3391866159538782605}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 20}
+  m_LocalPosition: {x: -6.726, y: 11.754, z: 15.767}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4539279499134370304}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6238880144712213050
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3956201865565439602}
+  m_Layer: 0
+  m_Name: FirePoint (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3956201865565439602
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6238880144712213050}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -6.726, y: -11.65, z: 15.767}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -67,6 +98,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6699566235248799850}
+  - {fileID: 3956201865565439602}
   - {fileID: 2591355340128064519}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
@@ -148,7 +180,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Manatite.Runtime::Manatite.Enemies.EnemyWeapon
   data: {fileID: 11400000, guid: 52282e6f161be19459c2f875f2fb9dcc, type: 2}
-  firePoint: {fileID: 6699566235248799850}
+  firePoints:
+  - {fileID: 6699566235248799850}
+  - {fileID: 3956201865565439602}
   canFire: 1
 --- !u!65 &5679551837805629507
 BoxCollider:

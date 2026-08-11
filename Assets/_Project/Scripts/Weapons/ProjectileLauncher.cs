@@ -178,7 +178,7 @@ namespace Manatite.Weapons
             if (splashVfxPrefab == null) return;
 
             GameObject instance = ObjectPooler.Get(splashVfxPrefab, position, Quaternion.identity);
-            if (instance.TryGetComponent(out FadingSphereEffect effect))
+            if (instance.TryGetComponent(out IRadiusVfx effect))
                 effect.Play(radius);
         }
 
