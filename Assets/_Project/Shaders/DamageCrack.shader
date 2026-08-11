@@ -88,14 +88,6 @@ Shader "Manatite/DamageCrack"
                 }
             }
 
-            float CrackField(float2 uv)
-            {
-                float f1, f2;
-                float2 cellId;
-                Voronoi(uv, f1, f2, cellId);
-                return f2 - f1;
-            }
-
             float Hash1(float2 p)
             {
                 return frac(sin(dot(p, float2(41.3, 289.1))) * 43758.5453123);
@@ -120,9 +112,12 @@ Shader "Manatite/DamageCrack"
                 Voronoi(layerUV, f1, f2, s.cellId);
                 s.edge = f2 - f1;
 
-                float texel = 0.001 * scale;
-                float edgeDx = CrackField(layerUV + float2(texel, 0)) - CrackField(layerUV - float2(texel, 0));
-                float edgeDy = CrackField(layerUV + float2(0, texel)) - CrackField(layerUV - float2(0, texel));
+                // Screen-space derivatives replace the old 4x finite-difference
+                // re-sample (which re-ran the full Voronoi search per axis, 4x the
+                // cost of the single evaluation above) — ddx/ddy are hardware-computed
+                // from the pixel quad and effectively free by comparison.
+                float edgeDx = ddx(s.edge);
+                float edgeDy = ddy(s.edge);
                 s.distortDir = normalize(float2(edgeDx, edgeDy) + 1e-5);
                 return s;
             }
@@ -132,6 +127,16 @@ Shader "Manatite/DamageCrack"
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
                 float2 uv = input.texcoord;
+
+                // _Damage is uniform across the whole draw (not per-pixel), so this
+                // branch is coherent for every thread in the dispatch: at zero damage
+                // the GPU skips the entire Voronoi evaluation below instead of just
+                // masking its result to invisible, which is what happened before.
+                if (_Damage <= 0.0001)
+                {
+                    return SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_BlitTexture, uv);
+                }
+
                 float aspect = _ScreenParams.x / _ScreenParams.y;
                 float2 baseUV = float2((uv.x - 0.5) * aspect + 0.5, uv.y);
 
