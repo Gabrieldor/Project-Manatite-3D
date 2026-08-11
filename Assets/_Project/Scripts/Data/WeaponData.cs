@@ -32,6 +32,8 @@ namespace Manatite.Data
         [SerializeField] private GameObject splashVfxPrefab;
         [Tooltip("Spawned at the impact point on every hit this weapon lands (no chip required).")]
         [SerializeField] private GameObject hitMarkerPrefab;
+        [Tooltip("Spawned between each pair of chained targets whenever an equipped chip grants a lightning chain count > 0.")]
+        [SerializeField] private GameObject lightningVfxPrefab;
 
         public WeaponFireMode FireMode => fireMode;
         public float FireRate => fireRate;
@@ -42,5 +44,6 @@ namespace Manatite.Data
         public int Damage => damage;
         public GameObject SplashVfxPrefab => splashVfxPrefab;
         public GameObject HitMarkerPrefab => hitMarkerPrefab;
+        public GameObject LightningVfxPrefab => lightningVfxPrefab;
     }
 }

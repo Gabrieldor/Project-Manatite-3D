@@ -96,8 +96,17 @@ namespace Manatite.Weapons
             int effectiveCorrosionDps = _inventory != null
                 ? _inventory.GetModifiedInt(ChipStatTarget.CorrosionDps, 0)
                 : 0;
+            float effectiveLightningRange = _inventory != null
+                ? _inventory.GetModifiedFloat(ChipStatTarget.LightningRange, 0f)
+                : 0f;
+            int effectiveLightningChainCount = _inventory != null
+                ? _inventory.GetModifiedInt(ChipStatTarget.LightningChainCount, 0)
+                : 0;
+            int effectiveLightningDamage = _inventory != null
+                ? _inventory.GetModifiedInt(ChipStatTarget.LightningDamage, 0)
+                : 0;
 
-            ProjectileLauncher.Fire(data.ProjectilePrefab, effectiveDamage, data.ProjectileSpeed, data.ProjectileLifetime, firePoint, _ownerCollider, effectiveSplashRadius, data.SplashVfxPrefab, data.HitMarkerPrefab, effectiveCorrosionDuration, effectiveCorrosionDps);
+            ProjectileLauncher.Fire(data.ProjectilePrefab, effectiveDamage, data.ProjectileSpeed, data.ProjectileLifetime, firePoint, _ownerCollider, effectiveSplashRadius, data.SplashVfxPrefab, data.HitMarkerPrefab, effectiveCorrosionDuration, effectiveCorrosionDps, effectiveLightningRange, effectiveLightningChainCount, effectiveLightningDamage, data.LightningVfxPrefab);
 
             float effectiveFireRate = _inventory != null
                 ? _inventory.GetModifiedFloat(ChipStatTarget.FireRate, data.FireRate)

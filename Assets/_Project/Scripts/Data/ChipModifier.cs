@@ -24,11 +24,20 @@ namespace Manatite.Data
         private const float CorrosionDurationMax = 10f;
         private const float CorrosionDpsMin = 0f;
         private const float CorrosionDpsMax = 5f;
+        // World-space chain-search radius, chain hop count, and per-hop damage — same reasoning
+        // as SplashRadius/Corrosion above, each is its own standalone stat, not a base delta.
+        private const float LightningRangeMin = 0f;
+        private const float LightningRangeMax = 1000f;
+        private const float LightningChainCountMin = 0f;
+        private const float LightningChainCountMax = 15f;
+        private const float LightningDamageMin = 0f;
+        private const float LightningDamageMax = 15f;
 
         [SerializeField] private ChipStatTarget statTarget;
         [SerializeField] private ChipValueKind valueKind;
         [Tooltip("Rolled value range for a new instance of this modifier. Flat: -5..+5. " +
-                 "Multiplier: -75%..+100% (stored as -0.75..1.0). SplashRadius: 0..150 (world units).")]
+                 "Multiplier: -75%..+100% (stored as -0.75..1.0). SplashRadius: 0..150 (world units). " +
+                 "LightningRange: 0..1000 (world units). LightningChainCount: 0..15. LightningDamage: 0..15.")]
         [SerializeField] private float minValue;
         [SerializeField] private float maxValue;
 
@@ -54,6 +63,21 @@ namespace Manatite.Data
             {
                 lo = CorrosionDpsMin;
                 hi = CorrosionDpsMax;
+            }
+            else if (statTarget == ChipStatTarget.LightningRange)
+            {
+                lo = LightningRangeMin;
+                hi = LightningRangeMax;
+            }
+            else if (statTarget == ChipStatTarget.LightningChainCount)
+            {
+                lo = LightningChainCountMin;
+                hi = LightningChainCountMax;
+            }
+            else if (statTarget == ChipStatTarget.LightningDamage)
+            {
+                lo = LightningDamageMin;
+                hi = LightningDamageMax;
             }
             else
             {

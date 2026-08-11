@@ -21,3 +21,4 @@ MonoBehaviour:
   damage: 1
   splashVfxPrefab: {fileID: 5066657089024752373, guid: d8312739b36f03d42b1ccfc5e0d9b80e, type: 3}
   hitMarkerPrefab: {fileID: 8663239110250999097, guid: 3a7a0c1cfb0d7b744b86c27da496bae8, type: 3}
+  lightningVfxPrefab: {fileID: 3696471842945366809, guid: cf2acfde58eee854494dc9aef12b61f1, type: 3}

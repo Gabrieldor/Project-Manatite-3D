@@ -15,11 +15,12 @@ namespace Manatite.Weapons
     internal static class ProjectileLauncher
     {
         private static readonly Collider[] SplashColliderBuffer = new Collider[32];
+        private static readonly Collider[] LightningColliderBuffer = new Collider[32];
 
-        public static void Fire(GameObject projectilePrefab, int damage, float projectileSpeed, float projectileLifetime, Transform firePoint, Collider ownerCollider = null, float splashRadius = 0f, GameObject splashVfxPrefab = null, GameObject hitMarkerPrefab = null, float corrosionDuration = 0f, int corrosionDps = 0)
-            => Fire(projectilePrefab, damage, projectileSpeed, projectileLifetime, firePoint.position, firePoint.rotation, ownerCollider, splashRadius, splashVfxPrefab, hitMarkerPrefab, corrosionDuration, corrosionDps);
+        public static void Fire(GameObject projectilePrefab, int damage, float projectileSpeed, float projectileLifetime, Transform firePoint, Collider ownerCollider = null, float splashRadius = 0f, GameObject splashVfxPrefab = null, GameObject hitMarkerPrefab = null, float corrosionDuration = 0f, int corrosionDps = 0, float lightningRange = 0f, int lightningChainCount = 0, int lightningDamage = 0, GameObject lightningVfxPrefab = null)
+            => Fire(projectilePrefab, damage, projectileSpeed, projectileLifetime, firePoint.position, firePoint.rotation, ownerCollider, splashRadius, splashVfxPrefab, hitMarkerPrefab, corrosionDuration, corrosionDps, lightningRange, lightningChainCount, lightningDamage, lightningVfxPrefab);
 
-        public static void Fire(GameObject projectilePrefab, int damage, float projectileSpeed, float projectileLifetime, Vector3 position, Quaternion rotation, Collider ownerCollider = null, float splashRadius = 0f, GameObject splashVfxPrefab = null, GameObject hitMarkerPrefab = null, float corrosionDuration = 0f, int corrosionDps = 0)
+        public static void Fire(GameObject projectilePrefab, int damage, float projectileSpeed, float projectileLifetime, Vector3 position, Quaternion rotation, Collider ownerCollider = null, float splashRadius = 0f, GameObject splashVfxPrefab = null, GameObject hitMarkerPrefab = null, float corrosionDuration = 0f, int corrosionDps = 0, float lightningRange = 0f, int lightningChainCount = 0, int lightningDamage = 0, GameObject lightningVfxPrefab = null)
         {
             GameObject instance = ObjectPooler.Get(projectilePrefab, position, rotation);
             Projectile projectile = instance.GetComponent<Projectile>();
@@ -29,7 +30,7 @@ namespace Manatite.Weapons
             // Same-tag targets (e.g. two enemies) never damage each other, regardless of
             // aim or how close together they end up while swarming a shared target.
             string ownerTag = ownerCollider != null ? ownerCollider.tag : null;
-            projectile.OnHit += (_, collision) => ApplyDamage(collision, damage, ownerTag, splashRadius, splashVfxPrefab, hitMarkerPrefab, corrosionDuration, corrosionDps);
+            projectile.OnHit += (_, collision) => ApplyDamage(collision, damage, ownerTag, splashRadius, splashVfxPrefab, hitMarkerPrefab, corrosionDuration, corrosionDps, lightningRange, lightningChainCount, lightningDamage, lightningVfxPrefab);
             projectile.Launch(projectileSpeed, projectileLifetime);
 
             // The player's own gun always sounds equally present (2D); anything else firing
@@ -39,7 +40,7 @@ namespace Manatite.Weapons
             else AudioManager.PlaySfx3D(SfxCue.Shot, position);
         }
 
-        private static void ApplyDamage(Collision collision, int damage, string ownerTag, float splashRadius, GameObject splashVfxPrefab, GameObject hitMarkerPrefab, float corrosionDuration, int corrosionDps)
+        private static void ApplyDamage(Collision collision, int damage, string ownerTag, float splashRadius, GameObject splashVfxPrefab, GameObject hitMarkerPrefab, float corrosionDuration, int corrosionDps, float lightningRange, int lightningChainCount, int lightningDamage, GameObject lightningVfxPrefab)
         {
             Health primaryHealth = collision.collider.GetComponentInParent<Health>();
             DamageHealth(primaryHealth, damage, ownerTag);
@@ -59,10 +60,79 @@ namespace Manatite.Weapons
                 corrosion.Apply(corrosionDps, corrosionDuration);
             }
 
-            if (splashRadius <= 0f) return;
+            if (splashRadius > 0f)
+            {
+                ApplySplashDamage(hitPoint, splashRadius, damage, ownerTag, primaryHealth);
+                SpawnSplashVfx(splashVfxPrefab, hitPoint, splashRadius);
+            }
 
-            ApplySplashDamage(hitPoint, splashRadius, damage, ownerTag, primaryHealth);
-            SpawnSplashVfx(splashVfxPrefab, hitPoint, splashRadius);
+            if (lightningChainCount > 0 && lightningRange > 0f)
+                ChainLightning(hitPoint, primaryHealth, lightningRange, lightningChainCount, lightningDamage, ownerTag, lightningVfxPrefab);
+        }
+
+        // Bounces from the hit point through up to chainCount other targets. Each hop always
+        // prefers a target not yet struck by this shot, even if a farther one is unstruck and a
+        // closer one was already hit — only re-strikes an already-hit target when nothing
+        // unstruck remains in range, so the chain keeps going in sparse fights instead of
+        // fizzling out early. The node the bolt is currently at is always excluded (no
+        // zero-distance bounce straight back to where it just came from).
+        private static void ChainLightning(Vector3 originPoint, Health primaryHealth, float range, int chainCount, int damage, string ownerTag, GameObject lightningVfxPrefab)
+        {
+            var struckThisShot = new HashSet<Health>();
+            if (primaryHealth != null) struckThisShot.Add(primaryHealth);
+
+            Vector3 currentPoint = originPoint;
+            Health currentHealth = primaryHealth;
+
+            for (int i = 0; i < chainCount; i++)
+            {
+                Health target = FindNearestChainTarget(currentPoint, range, ownerTag, currentHealth, struckThisShot);
+                if (target == null) break;
+
+                Vector3 targetPoint = ClampToTargetBounds(target.transform.position, target);
+                SpawnLightningArc(lightningVfxPrefab, currentPoint, targetPoint);
+                DamageHealth(target, damage, ownerTag);
+                struckThisShot.Add(target);
+
+                currentPoint = targetPoint;
+                currentHealth = target;
+            }
+        }
+
+        private static Health FindNearestChainTarget(Vector3 origin, float range, string ownerTag, Health excludeSelf, HashSet<Health> struckThisShot)
+        {
+            int count = Physics.OverlapSphereNonAlloc(origin, range, LightningColliderBuffer);
+            Health best = null;
+            bool bestUnstruck = false;
+            float bestSqrDistance = float.MaxValue;
+
+            for (int i = 0; i < count; i++)
+            {
+                Health candidate = LightningColliderBuffer[i].GetComponentInParent<Health>();
+                if (candidate == null || candidate == excludeSelf) continue;
+                if (ownerTag != null && candidate.CompareTag(ownerTag)) continue;
+
+                bool unstruck = !struckThisShot.Contains(candidate);
+                float sqrDistance = (candidate.transform.position - origin).sqrMagnitude;
+
+                if (best == null || (unstruck && !bestUnstruck) || (unstruck == bestUnstruck && sqrDistance < bestSqrDistance))
+                {
+                    best = candidate;
+                    bestUnstruck = unstruck;
+                    bestSqrDistance = sqrDistance;
+                }
+            }
+
+            return best;
+        }
+
+        private static void SpawnLightningArc(GameObject lightningVfxPrefab, Vector3 from, Vector3 to)
+        {
+            if (lightningVfxPrefab == null) return;
+
+            GameObject instance = ObjectPooler.Get(lightningVfxPrefab, from, Quaternion.identity);
+            if (instance.TryGetComponent(out LightningArcEffect arc))
+                arc.Play(from, to);
         }
 
         // The hit collider can be larger than the visible mesh (e.g. enemy hulls use an

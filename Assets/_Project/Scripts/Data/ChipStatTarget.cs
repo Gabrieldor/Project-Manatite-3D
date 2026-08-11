@@ -6,6 +6,9 @@ namespace Manatite.Data
         Damage,
         SplashRadius,
         CorrosionDuration,
-        CorrosionDps
+        CorrosionDps,
+        LightningRange,
+        LightningChainCount,
+        LightningDamage
     }
 }
