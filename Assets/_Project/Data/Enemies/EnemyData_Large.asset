@@ -19,10 +19,10 @@ MonoBehaviour:
   stopDistance: 95
   leashDistance: 3000
   fireMode: 0
-  fireRate: 1
+  fireRate: 0.25
   singleFireDebounce: 0.05
   projectilePrefab: {fileID: 6884079911391522342, guid: cf859d439a400a144b57482450690477, type: 3}
   projectileSpeed: 500
   projectileLifetime: 3
-  damage: 1
+  damage: 20
   scatterAngle: 0

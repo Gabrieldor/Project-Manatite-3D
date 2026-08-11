@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5880afcbb72087b4a92fe88a1756bf6d, type: 3}
   m_Name: EnemyData_Basic
   m_EditorClassIdentifier: Manatite.Runtime::Manatite.Data.EnemyData
-  maxHealth: 30
+  maxHealth: 6
   scale: 1
   moveSpeed: 12
   turnRate: 90

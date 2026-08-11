@@ -75,7 +75,7 @@ namespace Manatite.Enemies
         private void Fire(Transform point, Transform target)
         {
             Quaternion rotation = ComputeAimRotation(point, target);
-            ProjectileLauncher.Fire(data.ProjectilePrefab, data.Damage, data.ProjectileSpeed, data.ProjectileLifetime, point.position, rotation, _ownerCollider);
+            ProjectileLauncher.Fire(data.ProjectilePrefab, data.Damage, data.ProjectileSpeed, data.ProjectileLifetime, point.position, rotation, _ownerCollider, projectileScale: data.Scale);
         }
 
         private Quaternion ComputeAimRotation(Transform point, Transform target)

@@ -17,12 +17,15 @@ namespace Manatite.Weapons
         private static readonly Collider[] SplashColliderBuffer = new Collider[32];
         private static readonly Collider[] LightningColliderBuffer = new Collider[32];
 
-        public static void Fire(GameObject projectilePrefab, int damage, float projectileSpeed, float projectileLifetime, Transform firePoint, Collider ownerCollider = null, float splashRadius = 0f, GameObject splashVfxPrefab = null, GameObject hitMarkerPrefab = null, float corrosionDuration = 0f, int corrosionDps = 0, float lightningRange = 0f, int lightningChainCount = 0, int lightningDamage = 0, GameObject lightningVfxPrefab = null)
-            => Fire(projectilePrefab, damage, projectileSpeed, projectileLifetime, firePoint.position, firePoint.rotation, ownerCollider, splashRadius, splashVfxPrefab, hitMarkerPrefab, corrosionDuration, corrosionDps, lightningRange, lightningChainCount, lightningDamage, lightningVfxPrefab);
+        public static void Fire(GameObject projectilePrefab, int damage, float projectileSpeed, float projectileLifetime, Transform firePoint, Collider ownerCollider = null, float splashRadius = 0f, GameObject splashVfxPrefab = null, GameObject hitMarkerPrefab = null, float corrosionDuration = 0f, int corrosionDps = 0, float lightningRange = 0f, int lightningChainCount = 0, int lightningDamage = 0, GameObject lightningVfxPrefab = null, float projectileScale = 1f)
+            => Fire(projectilePrefab, damage, projectileSpeed, projectileLifetime, firePoint.position, firePoint.rotation, ownerCollider, splashRadius, splashVfxPrefab, hitMarkerPrefab, corrosionDuration, corrosionDps, lightningRange, lightningChainCount, lightningDamage, lightningVfxPrefab, projectileScale);
 
-        public static void Fire(GameObject projectilePrefab, int damage, float projectileSpeed, float projectileLifetime, Vector3 position, Quaternion rotation, Collider ownerCollider = null, float splashRadius = 0f, GameObject splashVfxPrefab = null, GameObject hitMarkerPrefab = null, float corrosionDuration = 0f, int corrosionDps = 0, float lightningRange = 0f, int lightningChainCount = 0, int lightningDamage = 0, GameObject lightningVfxPrefab = null)
+        public static void Fire(GameObject projectilePrefab, int damage, float projectileSpeed, float projectileLifetime, Vector3 position, Quaternion rotation, Collider ownerCollider = null, float splashRadius = 0f, GameObject splashVfxPrefab = null, GameObject hitMarkerPrefab = null, float corrosionDuration = 0f, int corrosionDps = 0, float lightningRange = 0f, int lightningChainCount = 0, int lightningDamage = 0, GameObject lightningVfxPrefab = null, float projectileScale = 1f)
         {
             GameObject instance = ObjectPooler.Get(projectilePrefab, position, rotation);
+            // Read the scale from the prefab asset (not the pooled instance) so a stale scale
+            // from a previous shooter (e.g. a Large enemy) can never leak onto reused instances.
+            instance.transform.localScale = projectilePrefab.transform.localScale * projectileScale;
             Projectile projectile = instance.GetComponent<Projectile>();
 
             projectile.IgnoreOwnerCollider(ownerCollider);

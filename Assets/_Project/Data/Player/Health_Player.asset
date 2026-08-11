@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fea04ccdd98d9ae4ca928fea17f8bddc, type: 3}
   m_Name: Health_Player
   m_EditorClassIdentifier: Manatite.Runtime::Manatite.Data.HealthData
-  maxHealth: 10
+  maxHealth: 100
