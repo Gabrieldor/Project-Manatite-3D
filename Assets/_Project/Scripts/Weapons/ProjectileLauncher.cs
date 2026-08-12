@@ -131,6 +131,8 @@ namespace Manatite.Weapons
 
         private static void SpawnLightningArc(GameObject lightningVfxPrefab, Vector3 from, Vector3 to)
         {
+            AudioManager.PlaySfx3D(SfxCue.Lightning, Vector3.Lerp(from, to, 0.5f));
+
             if (lightningVfxPrefab == null) return;
 
             GameObject instance = ObjectPooler.Get(lightningVfxPrefab, from, Quaternion.identity);
@@ -178,6 +180,8 @@ namespace Manatite.Weapons
 
         private static void SpawnSplashVfx(GameObject splashVfxPrefab, Vector3 position, float radius)
         {
+            AudioManager.PlaySfx3D(SfxCue.Explosion, position);
+
             if (splashVfxPrefab == null) return;
 
             GameObject instance = ObjectPooler.Get(splashVfxPrefab, position, Quaternion.identity);

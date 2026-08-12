@@ -18,28 +18,63 @@ MonoBehaviour:
       clips: []
       volumeRange: {x: 1, y: 1}
       pitchRange: {x: 1, y: 1}
+      loop: 0
+      loopStart: 0
+      loopEnd: 0
   - cue: 1
     data:
       clips: []
       volumeRange: {x: 1, y: 1}
       pitchRange: {x: 1, y: 1}
+      loop: 0
+      loopStart: 0
+      loopEnd: 0
   - cue: 2
     data:
       clips: []
       volumeRange: {x: 1, y: 1}
       pitchRange: {x: 1, y: 1}
+      loop: 0
+      loopStart: 0
+      loopEnd: 0
   - cue: 3
     data:
-      clips: []
+      clips:
+      - {fileID: 8300000, guid: c011656088c748849adffc3f6c928cd7, type: 3}
+      volumeRange: {x: 0.4, y: 0.4}
+      pitchRange: {x: 1, y: 1}
+      loop: 1
+      loopStart: 0
+      loopEnd: 50.267822
+  - cue: 4
+    data:
+      clips:
+      - {fileID: 8300000, guid: b662a229d627d0a46b03546220463c9b, type: 3}
+      - {fileID: 8300000, guid: fe0e0c9015656d646a9f2e1ca6a305e7, type: 3}
+      - {fileID: 8300000, guid: 77c549af7b599fd40bea0659df92b617, type: 3}
       volumeRange: {x: 1, y: 1}
       pitchRange: {x: 1, y: 1}
+      loop: 0
+      loopStart: 0
+      loopEnd: 1
+  - cue: 5
+    data:
+      clips:
+      - {fileID: 8300000, guid: c9a48be645063724787c9e09605ce680, type: 3}
+      - {fileID: 8300000, guid: 403948c1eba04c448aeb8efee4333a84, type: 3}
+      - {fileID: 8300000, guid: b9dfcbd05febf52429b3cbe18ebada8e, type: 3}
+      volumeRange: {x: 1, y: 1}
+      pitchRange: {x: 1, y: 1}
+      loop: 0
+      loopStart: 0
+      loopEnd: 0.44829932
   musicTracks:
   - track: 1
     clip: {fileID: 8300000, guid: 252bd4fb2edae5848b5b909affe1b4f8, type: 3}
-    volume: 1
+    volume: 0.63
   - track: 2
     clip: {fileID: 8300000, guid: 9e7464735413cae48911a12ebe778c43, type: 3}
-    volume: 1
+    volume: 0.444
   - track: 3
     clip: {fileID: 8300000, guid: 51c2021f52cf36341999cc97bd33bd4b, type: 3}
-    volume: 1
+    volume: 0.642

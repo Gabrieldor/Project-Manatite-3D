@@ -38,6 +38,19 @@ namespace Manatite.Player
         private InputAction _roll;    // Axis: +right / -left
         private InputAction _rollModifier; // Button: while held, right stick rolls instead of looking
 
+        /// <summary>True while the move/elevate axes are actively being pushed — as opposed
+        /// to the ship merely still coasting from residual velocity. Drives
+        /// <see cref="ShipAudio"/>'s thruster loops.</summary>
+        public bool IsThrusting { get; private set; }
+
+        /// <summary>Raw translation stick input this frame: x = strafe (+right/-left),
+        /// y = forward/back (+fwd/-back). Drives which side of <see cref="ShipAudio"/>'s
+        /// directional thruster mounts fires — e.g. strafing left fires the right-side mount.</summary>
+        public Vector2 MoveInput { get; private set; }
+
+        /// <summary>Raw vertical stick input this frame: +up / -down. See <see cref="MoveInput"/>.</summary>
+        public float ElevateInput { get; private set; }
+
         private void Awake()
         {
             _rb = GetComponent<Rigidbody>();
@@ -103,6 +116,10 @@ namespace Manatite.Player
             Vector2 look = rolling ? Vector2.zero : _look.ReadValue<Vector2>();
             float elevate = _elevate.ReadValue<float>();
             float roll = _roll.ReadValue<float>();
+
+            MoveInput = move;
+            ElevateInput = elevate;
+            IsThrusting = move.sqrMagnitude > 0.0001f || elevate * elevate > 0.0001f;
 
             // --- Translation (ship-local) ---
             Vector3 thrust = new Vector3(

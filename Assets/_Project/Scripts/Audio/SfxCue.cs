@@ -6,5 +6,7 @@ namespace Manatite.Audio
         HitTaken,
         HitDealt,
         ThrusterLoop,
+        Explosion,
+        Lightning,
     }
 }
