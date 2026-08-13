@@ -23,5 +23,5 @@ MonoBehaviour:
     valueKind: 0
     minValue: 1
     maxValue: 2
-  description: 'On hit, corrodes the target: a lingering green tint and smoke that
-    deals damage over time, staggering the target with each tick.'
+  description: 'On hit, corrodes the target: a lingering green tint deals damage
+    over time, staggering the target with each tick.'

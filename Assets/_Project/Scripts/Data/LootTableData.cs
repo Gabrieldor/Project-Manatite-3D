@@ -20,6 +20,11 @@ namespace Manatite.Data
     {
         [SerializeField] private LootEntry[] entries = Array.Empty<LootEntry>();
 
+        [Header("Shop")]
+        [Tooltip("Chance, rolled independently of the chip entries above, that clearing this planet also spawns the chip-forging shop marker above it.")]
+        [Range(0f, 1f)] [SerializeField] private float shopChance;
+
         public LootEntry[] Entries => entries;
+        public float ShopChance => shopChance;
     }
 }

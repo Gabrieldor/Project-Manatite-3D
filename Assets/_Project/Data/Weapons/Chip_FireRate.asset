@@ -19,4 +19,4 @@ MonoBehaviour:
     valueKind: 0
     minValue: 0
     maxValue: 5
-  description: Boots firerate
+  description: When equipped, boosts fire rate

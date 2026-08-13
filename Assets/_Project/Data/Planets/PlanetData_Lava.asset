@@ -18,3 +18,4 @@ MonoBehaviour:
   minZoneClearance: 500
   maxZoneClearance: 500
   spawnTable: {fileID: 11400000, guid: 5fae4a73cefa11f419ea4b31c0c63f90, type: 2}
+  lootTable: {fileID: 11400000, guid: f90818ab1b1853f4bbdbd9fe3f7e7325, type: 2}

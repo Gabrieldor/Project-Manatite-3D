@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using Manatite.Core;
 using Manatite.Core.SaveSystem;
 using Manatite.Data;
 using Manatite.Enemies;
 using Manatite.Player;
+using Manatite.UI;
 using UnityEngine;
 
 namespace Manatite.Environment
@@ -18,6 +18,17 @@ namespace Manatite.Environment
     {
         [SerializeField] private PlanetSpawnData spawnData;
         [SerializeField] private GameObject planetPrefab;
+        [Tooltip("Instantiated above a planet on clear when its loot table's shop chance rolls " +
+            "successfully. Also used by ShopTestSpawner for debug spawning.")]
+        [SerializeField] private GameObject shopMarkerPrefab;
+        [Tooltip("The scene's shop panel, passed to every spawned marker so it knows what to open.")]
+        [SerializeField] private ShopPanel shopPanel;
+        [Tooltip("World-unit clearance above the planet's surface the shop marker spawns at.")]
+        [SerializeField] private float shopMarkerHeightOffset = 80f;
+        [Tooltip("Assigned directly to the ship rig rather than resolved via tag lookup — " +
+            "the ship's mesh children also carry the Player tag, which makes " +
+            "GameObject.FindGameObjectWithTag ambiguous.")]
+        [SerializeField] private Rigidbody playerRigidbody;
 
         /// <summary>Fired whenever a spawned planet's encounter is fully cleared. This
         /// script only reports its own domain (a planet became beaten) — it has no idea
@@ -30,8 +41,7 @@ namespace Manatite.Environment
         {
             if (planetPrefab == null) return;
 
-            GameObject player = GameObject.FindGameObjectWithTag(GameLayers.PlayerTag);
-            if (player != null) _playerInventory = player.GetComponentInChildren<PlayerInventory>();
+            if (playerRigidbody != null) _playerInventory = playerRigidbody.GetComponent<PlayerInventory>();
 
             if (PendingLoad.Data != null)
             {
@@ -98,11 +108,9 @@ namespace Manatite.Environment
         /// the first frame they gain control.</summary>
         private void FacePlayerAtNearestPlanet(Vector3[] centers)
         {
-            if (centers.Length == 0) return;
+            if (centers.Length == 0 || playerRigidbody == null) return;
 
-            GameObject player = GameObject.FindGameObjectWithTag(GameLayers.PlayerTag);
-            if (player == null || !player.TryGetComponent(out Rigidbody rb)) return;
-
+            Rigidbody rb = playerRigidbody;
             Vector3 nearest = centers[0];
             float nearestSqrDistance = float.MaxValue;
             foreach (Vector3 center in centers)
@@ -185,8 +193,22 @@ namespace Manatite.Environment
                 if (clearedRing != null)
                     clearedRing.Show();
                 RollLoot(type.LootTable);
+                RollShop(type.LootTable, instance.transform, radius);
                 OnPlanetBeaten?.Invoke();
             };
+        }
+
+        /// <summary>Rolls the loot table's independent shop chance and, on success, spawns
+        /// <see cref="shopMarkerPrefab"/> above the planet's surface.</summary>
+        private void RollShop(LootTableData lootTable, Transform planetRoot, float radius)
+        {
+            if (lootTable == null || shopMarkerPrefab == null) return;
+            if (Random.value > lootTable.ShopChance) return;
+
+            GameObject marker = Instantiate(shopMarkerPrefab, planetRoot, false);
+            marker.transform.localPosition = Vector3.up * (radius + shopMarkerHeightOffset);
+            if (marker.TryGetComponent(out ShopMarker shopMarker))
+                shopMarker.Initialize(shopPanel);
         }
 
         /// <summary>Rolls each entry's drop chance independently and hands successful

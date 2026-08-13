@@ -15,6 +15,7 @@ namespace Manatite.Player
     {
         private const int EquipSlotCount = 4;
         private const int InventorySlotCount = 36;
+        private const int MergeSlotCount = 2;
 
         [Tooltip("Chips placed directly into inventory slots 0.. at scene start (no pickup yet).")]
         [SerializeField] private ChipData[] startingInventoryItems = Array.Empty<ChipData>();
@@ -23,6 +24,11 @@ namespace Manatite.Player
         // these arrays regardless of cross-object script execution order.
         private readonly ChipInstance[] _equipSlots = new ChipInstance[EquipSlotCount];
         private readonly ChipInstance[] _inventorySlots = new ChipInstance[InventorySlotCount];
+
+        /// <summary>Staging slots for the chip-forging shop's Merge panel. Kept separate from
+        /// <see cref="_equipSlots"/>/<see cref="_inventorySlots"/> rather than a third
+        /// <see cref="SlotsFor"/> category, since only the shop UI ever touches these.</summary>
+        private readonly ChipInstance[] _mergeSlots = new ChipInstance[MergeSlotCount];
 
         public event Action OnInventoryChanged;
 
@@ -101,5 +107,18 @@ namespace Manatite.Player
             Mathf.FloorToInt(GetModifiedFloat(target, baseValue));
 
         private ChipInstance[] SlotsFor(bool equip) => equip ? _equipSlots : _inventorySlots;
+
+        public ChipInstance GetMergeSlot(int index) => _mergeSlots[index];
+
+        public bool IsMergeSlotEmpty(int index) => _mergeSlots[index] == null;
+
+        /// <summary>Swaps a merge slot's contents with an inventory slot's. Symmetric, so this
+        /// single call covers placing a chip into an empty merge slot, replacing whatever was
+        /// already there, and removing one (by targeting an empty inventory slot).</summary>
+        public void SwapMergeWithInventory(int mergeIndex, int inventoryIndex)
+        {
+            (_mergeSlots[mergeIndex], _inventorySlots[inventoryIndex]) = (_inventorySlots[inventoryIndex], _mergeSlots[mergeIndex]);
+            OnInventoryChanged?.Invoke();
+        }
     }
 }

@@ -25,6 +25,8 @@
 
 Picking up a chip pops a HUD toast (`LootNotificationView`, top-right corner): item-slot icon on the left third, chip name as a title plus the full stat breakdown and description on the right two-thirds — same visual language as the inventory slot/tooltip. Multiple simultaneous drops queue and show one after another (2.5s each, no animation). See `specs/loot-drop-notification.md`.
 
+**Chip forging shop**: a planet's `LootTableData` also carries an independent `shopChance` — on a successful roll, clearing the encounter spawns a `ShopMarker` (billboarded yellow "!") above the planet. Flying into it opens the Shop panel: two hoverable Merge slots (fed by picking a chip from a revealed inventory grid) plus a Merge button. *TBD: the actual merge/forge outcome — the button is currently wired but inert.* See `specs/chip-forging-shop-ui.md`.
+
 ## Enemies
 - **Basic Enemy**: capsule placeholder model, straight-line pursuit of the player, no attack yet. Tunables in `EnemyMovement_Basic.asset`.
 - **Spawn rule**: proximity-triggered. Each planet carries its own trigger zone (radius = its scale × a per-type multiplier range); entering it spawns a configurable roster (which enemies, how many, all-at-once or in waves) around the ship's current position. In Waves mode, each wave must be fully killed before the next one launches (plus a short breather afterward) — it's not a fixed timer. Config lives in `EnemySpawnData` assets, one per planet type (`EnemySpawn_Lava/Ice/Acid.asset`). If the player flees before finishing the fight (enemies leash back out rather than dying), the zone re-arms 30s after its encounter finishes spawning and can trigger again. Once every spawned enemy is actually killed, the zone is permanently done — it never re-arms, and the planet shows a blue `ClearedRing` around it from then on (see Planets).
@@ -42,6 +44,7 @@ Picking up a chip pops a HUD toast (`LootNotificationView`, top-right corner): i
 ## Decisions log
 | Date | Decision | Why |
 |------|----------|-----|
+| 2026-08-13 | Chip forging shop marker auto-opens the panel on trigger-enter, not a press-to-interact prompt; shop spawn is a drop-chance roll on the planet's loot table, independent of its chip entries | No `Interact` input action exists yet (would add scope beyond this UI-validation pass); matches the existing `EnemySpawnZone` proximity-trigger convention. Merge slots are real `PlayerInventory` state so the UI is ready for an actual merge/forge implementation later (see `specs/chip-forging-shop-ui.md`) |
 | 2026-07-18 | ScriptableObject-driven tuning, pooled projectiles/enemies, new Input System only | Project architecture baseline (see CLAUDE.md) |
 | 2026-07-20 | Player ship = 6DoF Newtonian free-flight, gamepad-first, first-person cockpit view | User control spec (see `specs/ship-6dof-fps.md`) |
 | 2026-07-21 | Playable field fixed at 9350×6600×10175 box (see Vision) | Derived from farthest surviving mobility-test "planet" per axis +10% margin |
