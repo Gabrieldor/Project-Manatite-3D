@@ -120,5 +120,17 @@ namespace Manatite.Player
             (_mergeSlots[mergeIndex], _inventorySlots[inventoryIndex]) = (_inventorySlots[inventoryIndex], _mergeSlots[mergeIndex]);
             OnInventoryChanged?.Invoke();
         }
+
+        /// <summary>Fuses both merge slots via <see cref="ChipMerger"/>: slot 0 becomes the
+        /// result, slot 1 clears. No-ops (returns false) if either slot is empty.</summary>
+        public bool TryMerge()
+        {
+            if (_mergeSlots[0] == null || _mergeSlots[1] == null) return false;
+
+            _mergeSlots[0] = ChipMerger.Merge(_mergeSlots[0], _mergeSlots[1]);
+            _mergeSlots[1] = null;
+            OnInventoryChanged?.Invoke();
+            return true;
+        }
     }
 }

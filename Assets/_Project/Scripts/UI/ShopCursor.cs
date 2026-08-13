@@ -37,6 +37,11 @@ namespace Manatite.UI
         [Tooltip("Merge button — the 3rd gamepad-navigable stop in the merge row. Select invokes " +
             "its onClick rather than opening the inventory picker.")]
         [SerializeField] private Button mergeButton;
+        [Tooltip("The Merge button's icon Image — its sprite swaps between mergeButtonNormalSprite " +
+            "and mergeButtonSelectedSprite on hover instead of being tinted like a slot.")]
+        [SerializeField] private Image mergeButtonIcon;
+        [SerializeField] private Sprite mergeButtonNormalSprite;
+        [SerializeField] private Sprite mergeButtonSelectedSprite;
         [Tooltip("Root shown/hidden as the inventory picker grid is opened/closed.")]
         [SerializeField] private GameObject inventoryPickerRoot;
         [Tooltip("Parent of the 36 inventory picker slots (9 cols x 4 rows).")]
@@ -80,7 +85,6 @@ namespace Manatite.UI
 
             CacheDefaultColors(mergePanel);
             CacheDefaultColors(inventoryPickerPanel);
-            if (mergeButton != null) CacheDefaultColor(mergeButton.GetComponent<Image>());
         }
 
         private void CacheDefaultColors(RectTransform panel)
@@ -116,6 +120,7 @@ namespace Manatite.UI
             _map.Disable();
             if (_hoverImage != null) _hoverImage.color = _defaultColors[_hoverImage];
             _hoverImage = null;
+            if (mergeButtonIcon != null) mergeButtonIcon.sprite = mergeButtonNormalSprite;
         }
 
         private void Update()
@@ -174,12 +179,30 @@ namespace Manatite.UI
         {
             if (inventory == null) return;
 
-            Image img = GetCurrentSlot().GetComponent<Image>();
-            if (img != _hoverImage)
+            bool hoveringButton = !IsPickerOpen && _mergeIndex >= MergeSlotCount;
+
+            if (hoveringButton)
             {
-                if (_hoverImage != null) _hoverImage.color = _defaultColors[_hoverImage];
-                img.color = cursorColor;
-                _hoverImage = img;
+                // The button swaps to a dedicated "selected" sprite instead of being tinted like
+                // a slot — flatly recoloring the icon would wash out its own art.
+                if (_hoverImage != null)
+                {
+                    _hoverImage.color = _defaultColors[_hoverImage];
+                    _hoverImage = null;
+                }
+                if (mergeButtonIcon != null) mergeButtonIcon.sprite = mergeButtonSelectedSprite;
+            }
+            else
+            {
+                if (mergeButtonIcon != null) mergeButtonIcon.sprite = mergeButtonNormalSprite;
+
+                Image img = GetCurrentSlot().GetComponent<Image>();
+                if (img != _hoverImage)
+                {
+                    if (_hoverImage != null) _hoverImage.color = _defaultColors[_hoverImage];
+                    img.color = cursorColor;
+                    _hoverImage = img;
+                }
             }
 
             HoveredChip = GetCurrentChip();
@@ -221,6 +244,14 @@ namespace Manatite.UI
             IsPickerOpen = false;
             if (inventoryPickerRoot != null) inventoryPickerRoot.SetActive(false);
             _mergeIndex = _pendingMergeIndex;
+            RefreshHover();
+        }
+
+        /// <summary>Wired to the Merge button's OnClick via <see cref="ShopPanel"/>. Refreshes
+        /// the hover afterward since slot 0 now holds the merged result and slot 1 is empty.</summary>
+        public void TryMerge()
+        {
+            if (inventory == null || !inventory.TryMerge()) return;
             RefreshHover();
         }
 

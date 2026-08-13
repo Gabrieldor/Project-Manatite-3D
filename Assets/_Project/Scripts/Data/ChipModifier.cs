@@ -46,6 +46,16 @@ namespace Manatite.Data
         public float MinValue => minValue;
         public float MaxValue => maxValue;
 
+        /// <summary>Used by <see cref="Manatite.Core.ChipMerger"/> to build a merged chip's rows
+        /// from an already-computed value rather than a min/max roll range.</summary>
+        public ChipModifier(ChipStatTarget statTarget, ChipValueKind valueKind, float minValue, float maxValue)
+        {
+            this.statTarget = statTarget;
+            this.valueKind = valueKind;
+            this.minValue = minValue;
+            this.maxValue = maxValue;
+        }
+
         public void ClampToValueKindRange()
         {
             float lo, hi;

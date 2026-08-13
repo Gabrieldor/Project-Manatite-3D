@@ -21,6 +21,12 @@ namespace Manatite.Combat
         public int Current => _current;
         public int Max => _maxHealthOverride ?? (data != null ? data.MaxHealth : 0);
 
+        /// <summary>False once dead and pooled/deactivated. A lethal hit can pool-release this
+        /// GameObject synchronously (Health.OnDied -> ... -> SetActive(false)) before the code
+        /// that dealt it finishes running, so any status/debuff effect should check this before
+        /// attaching to a target rather than assuming "still have a reference" means "still alive".</summary>
+        public bool IsAlive => _current > 0 && gameObject.activeInHierarchy;
+
         /// <summary>Lets a caller (e.g. <see cref="Manatite.Enemies.EnemyController"/>) drive max
         /// health from its own data asset instead of assigning a <see cref="HealthData"/> here.</summary>
         public void SetMaxHealth(int value) => _maxHealthOverride = value;

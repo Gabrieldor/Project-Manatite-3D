@@ -1,3 +1,4 @@
+using Manatite.Weapons;
 using UnityEngine;
 
 namespace Manatite.Combat
@@ -5,8 +6,12 @@ namespace Manatite.Combat
     /// <summary>
     /// Damage-over-time status: green tint while active, ticks
     /// <see cref="Health.TakeDamage"/> once per second, and kicks a visual "flinch" rotation
-    /// on each tick. Added lazily (get-or-add) by <see cref="Manatite.Weapons.ProjectileLauncher"/>
-    /// on any hit that carries a corrosion chip's duration/DPS.
+    /// on each tick. Added lazily (get-or-add) by <see cref="Manatite.Weapons.CorrosionProcEffect"/>
+    /// on any hit that carries a corrosion chip's duration/DPS. Each tick also re-raises a hit
+    /// through <see cref="ProcBus"/> using the <see cref="EffectProfile"/> snapshotted when the
+    /// status was applied, so a corrosion tick can go on to trigger Splash/Lightning exactly
+    /// like a fresh projectile impact would — with a fresh depth budget each time, since a tick
+    /// a second later is its own event, not a continuation of whatever chain first applied it.
     /// </summary>
     [RequireComponent(typeof(Health))]
     public sealed class CorrosionEffect : MonoBehaviour
@@ -62,6 +67,8 @@ namespace Manatite.Combat
         private float _remainingDuration;
         private float _tickTimer;
         private float _jitterTimer;
+        private EffectProfile _profile;
+        private string _ownerTag;
 
         private void Awake()
         {
@@ -74,13 +81,15 @@ namespace Manatite.Combat
         }
 
         /// <summary>Starts (or refreshes) the corrosion status. Re-applying while already active
-        /// overwrites dps/duration with the new values rather than stacking.</summary>
-        public void Apply(int dps, float duration)
+        /// overwrites dps/duration/profile with the new values rather than stacking.</summary>
+        public void Apply(in EffectProfile profile, string ownerTag)
         {
-            if (dps <= 0 || duration <= 0f) return;
+            if (profile.CorrosionDps <= 0 || profile.CorrosionDuration <= 0f) return;
 
-            _dps = dps;
-            _remainingDuration = Mathf.Max(_remainingDuration, duration);
+            _dps = profile.CorrosionDps;
+            _remainingDuration = Mathf.Max(_remainingDuration, profile.CorrosionDuration);
+            _profile = profile;
+            _ownerTag = ownerTag;
 
             if (_active) return;
             _active = true;
@@ -115,6 +124,13 @@ namespace Manatite.Combat
         {
             _health.TakeDamage(_dps);
 
+            // TakeDamage can kill the target, which synchronously pools/deactivates this exact
+            // GameObject (Health.OnDied -> ... -> ObjectPooler.Release -> SetActive(false) ->
+            // this component's own OnDisable -> EndEffect, all before TakeDamage returns).
+            // Bail out instead of re-raising a hit that would revive corrosion on what's now a
+            // pooled object, waiting to resurface already-corroded on its next spawn.
+            if (!_active) return;
+
             Vector3 axisJitter = new Vector3(
                 Random.Range(-jitterDegrees, jitterDegrees),
                 Random.Range(-jitterDegrees, jitterDegrees),
@@ -122,6 +138,9 @@ namespace Manatite.Combat
             _jitterKickRotation = _restLocalRotation * Quaternion.Euler(axisJitter);
             _jitterTransform.localRotation = _jitterKickRotation;
             _jitterTimer = jitterRecoverDuration;
+
+            Vector3 point = ProjectileLauncher.ClampToTargetBounds(transform.position, _health);
+            ProcBus.RaiseHit(new HitContext(point, _health, _ownerTag), _profile);
         }
 
         private void EndEffect()

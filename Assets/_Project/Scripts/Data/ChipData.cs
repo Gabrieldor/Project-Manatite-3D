@@ -23,6 +23,19 @@ namespace Manatite.Data
         public ChipModifier[] Modifiers => modifiers;
         public string Description => description;
 
+        /// <summary>Builds an in-memory-only chip (never saved as an .asset) for
+        /// <see cref="Manatite.Core.ChipMerger"/>'s output — merging shouldn't litter the
+        /// project with one new asset per fuse.</summary>
+        internal static ChipData CreateMerged(string displayName, Sprite icon, ChipModifier[] modifiers, string description)
+        {
+            ChipData chip = CreateInstance<ChipData>();
+            chip.displayName = displayName;
+            chip.icon = icon;
+            chip.modifiers = modifiers;
+            chip.description = description;
+            return chip;
+        }
+
         private void OnValidate()
         {
             for (int i = 0; i < modifiers.Length; i++)

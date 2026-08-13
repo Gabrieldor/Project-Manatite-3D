@@ -22,5 +22,14 @@ namespace Manatite.Core
             for (int i = 0; i < modifiers.Length; i++)
                 RolledValues[i] = Random.Range(modifiers[i].MinValue, modifiers[i].MaxValue);
         }
+
+        /// <summary>Wraps <paramref name="data"/> around already-known values instead of rolling
+        /// new ones — used by <see cref="ChipMerger"/>, whose merged values are computed once
+        /// from the source chips rather than randomized.</summary>
+        public ChipInstance(ChipData data, float[] rolledValues)
+        {
+            Data = data;
+            RolledValues = rolledValues;
+        }
     }
 }
