@@ -3,6 +3,7 @@ using Manatite.Core;
 using Manatite.Core.SaveSystem;
 using Manatite.Data;
 using Manatite.Enemies;
+using Manatite.Player;
 using UnityEngine;
 
 namespace Manatite.Environment
@@ -23,9 +24,14 @@ namespace Manatite.Environment
         /// who, if anyone, cares (e.g. RunSaveController listening to autosave).</summary>
         public event System.Action OnPlanetBeaten;
 
+        private PlayerInventory _playerInventory;
+
         private void Start()
         {
             if (planetPrefab == null) return;
+
+            GameObject player = GameObject.FindGameObjectWithTag(GameLayers.PlayerTag);
+            if (player != null) _playerInventory = player.GetComponentInChildren<PlayerInventory>();
 
             if (PendingLoad.Data != null)
             {
@@ -155,11 +161,13 @@ namespace Manatite.Environment
             if (visual.TryGetComponent(out MeshRenderer renderer))
                 renderer.sharedMaterial = type.Material;
 
+            PlanetClearedRing clearedRing = visual.GetComponentInChildren<PlanetClearedRing>(true);
+
             Transform zoneTransform = instance.transform.Find("SpawnZone");
             SphereCollider collider = zoneTransform.GetComponent<SphereCollider>();
             float resolvedZoneRadius = zoneRadius >= 0f
                 ? zoneRadius
-                : radius * Random.Range(type.MinZoneRadiusMultiplier, type.MaxZoneRadiusMultiplier);
+                : radius + Random.Range(type.MinZoneClearance, type.MaxZoneClearance);
             collider.radius = resolvedZoneRadius;
 
             EnemySpawnZone zone = zoneTransform.GetComponent<EnemySpawnZone>();
@@ -168,12 +176,35 @@ namespace Manatite.Environment
             PlanetState state = instance.AddComponent<PlanetState>();
             state.Initialize(planetId, type.name, scale, resolvedZoneRadius);
             state.Beaten = beaten;
+            if (beaten && clearedRing != null)
+                clearedRing.Show();
 
             zone.OnEncounterCleared += () =>
             {
                 state.Beaten = true;
+                if (clearedRing != null)
+                    clearedRing.Show();
+                RollLoot(type.LootTable);
                 OnPlanetBeaten?.Invoke();
             };
+        }
+
+        /// <summary>Rolls each entry's drop chance independently and hands successful
+        /// drops to the player's inventory. A full inventory just means that item is
+        /// skipped — no other effect.</summary>
+        private void RollLoot(LootTableData lootTable)
+        {
+            if (lootTable == null || _playerInventory == null) return;
+
+            LootEntry[] entries = lootTable.Entries;
+            if (entries == null) return;
+
+            for (int i = 0; i < entries.Length; i++)
+            {
+                if (entries[i].item == null) continue;
+                if (Random.value <= entries[i].dropChance)
+                    _playerInventory.TryAddItem(entries[i].item);
+            }
         }
     }
 }

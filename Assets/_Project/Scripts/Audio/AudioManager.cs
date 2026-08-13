@@ -173,13 +173,21 @@ namespace Manatite.Audio
             source.playOnAwake = false;
             source.loop = loop;
             source.spatialBlend = 0f;
-            // Only takes effect on spatial plays (spatialBlend set to 1 per-call), but the
-            // Unity default minDistance of 1 attenuates almost nothing at this game's scale —
-            // enemies engage from EnemyData.StopDistance (15+) outward, so 3D SFX would be
-            // nearly inaudible by the time combat actually starts.
-            source.rolloffMode = AudioRolloffMode.Logarithmic;
+            // Only takes effect on spatial plays (spatialBlend set to 1 per-call). Custom
+            // curve instead of the built-in Logarithmic mode: the built-in curve's shape
+            // isn't a simple minDistance/distance ratio (confirmed by ear, not just formula),
+            // so distance/volume pairs can't be reasoned about analytically — pin them
+            // explicitly instead. Full volume out to ~10% of maxDistance (enemies engage from
+            // EnemyData.StopDistance (15+) outward, so close-range SFX must stay unattenuated),
+            // then a straight line down to exactly 75% at maxDistance (780 — the observed
+            // ship-to-surface distance of a planet dead ahead in testing).
+            source.rolloffMode = AudioRolloffMode.Custom;
             source.minDistance = 15f;
-            source.maxDistance = 300f;
+            source.maxDistance = 780f;
+            source.SetCustomCurve(AudioSourceCurveType.CustomRolloff, new AnimationCurve(
+                new Keyframe(0f, 1f, 0f, 0f),
+                new Keyframe(0.1f, 1f, 0f, -0.2777778f),
+                new Keyframe(1f, 0.75f, -0.2777778f, 0f)));
             return source;
         }
 

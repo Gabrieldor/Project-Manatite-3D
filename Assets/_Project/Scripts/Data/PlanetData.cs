@@ -17,16 +17,21 @@ namespace Manatite.Data
         [SerializeField] private float maxScale = 550f;
 
         [Header("Encounter")]
-        [Tooltip("Multiplies the spawned scale to size the enemy encounter trigger radius.")]
-        [SerializeField] private float minZoneRadiusMultiplier = 1.3f;
-        [SerializeField] private float maxZoneRadiusMultiplier = 1.8f;
+        [Tooltip("Extra distance beyond the planet's surface added to size the enemy encounter trigger radius.")]
+        [SerializeField] private float minZoneClearance = 70f;
+        [SerializeField] private float maxZoneClearance = 180f;
         [SerializeField] private EnemySpawnData spawnTable;
+
+        [Header("Loot")]
+        [Tooltip("Chips this planet's encounter can drop into the player's inventory when cleared. Optional.")]
+        [SerializeField] private LootTableData lootTable;
 
         public Material Material => material;
         public float MinScale => minScale;
         public float MaxScale => maxScale;
-        public float MinZoneRadiusMultiplier => minZoneRadiusMultiplier;
-        public float MaxZoneRadiusMultiplier => maxZoneRadiusMultiplier;
+        public float MinZoneClearance => minZoneClearance;
+        public float MaxZoneClearance => maxZoneClearance;
         public EnemySpawnData SpawnTable => spawnTable;
+        public LootTableData LootTable => lootTable;
     }
 }

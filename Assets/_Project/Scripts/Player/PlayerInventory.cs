@@ -26,6 +26,10 @@ namespace Manatite.Player
 
         public event Action OnInventoryChanged;
 
+        /// <summary>Fired whenever <see cref="TryAddItem"/> successfully places a chip, e.g.
+        /// for a loot notification toast. Not fired for starting inventory items.</summary>
+        public event Action<ChipInstance> OnItemAdded;
+
         private void Awake()
         {
             int count = Mathf.Min(startingInventoryItems.Length, _inventorySlots.Length);
@@ -37,6 +41,24 @@ namespace Manatite.Player
 
             // Listeners may have already subscribed in their own OnEnable before this Awake ran.
             OnInventoryChanged?.Invoke();
+        }
+
+        /// <summary>Places a new instance of <paramref name="data"/> in the first empty
+        /// inventory slot (equip slots are never auto-filled). Returns false and does
+        /// nothing if the inventory is full.</summary>
+        public bool TryAddItem(ChipData data)
+        {
+            for (int i = 0; i < _inventorySlots.Length; i++)
+            {
+                if (_inventorySlots[i] != null) continue;
+
+                var instance = new ChipInstance(data);
+                _inventorySlots[i] = instance;
+                OnInventoryChanged?.Invoke();
+                OnItemAdded?.Invoke(instance);
+                return true;
+            }
+            return false;
         }
 
         public ChipInstance GetSlot(bool equip, int index) => SlotsFor(equip)[index];

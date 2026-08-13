@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: EnemyData_Large
   m_EditorClassIdentifier: Manatite.Runtime::Manatite.Data.EnemyData
   maxHealth: 30
-  scale: 5
+  scale: 6.767857
   moveSpeed: 12
   turnRate: 90
   stopDistance: 95
@@ -26,3 +26,5 @@ MonoBehaviour:
   projectileLifetime: 3
   damage: 20
   scatterAngle: 0
+  requireFirePointFacing: 0
+  firePointFovAngle: 90

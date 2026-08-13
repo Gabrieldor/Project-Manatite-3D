@@ -174,10 +174,10 @@ MonoBehaviour:
     value: 0
   - assetGuid: 56ce767bbc82e144fb05ed923d6cdd23
     fieldName: waveSize
-    value: 3
+    value: 5
   - assetGuid: 56ce767bbc82e144fb05ed923d6cdd23
     fieldName: timeBetweenWaves
-    value: 4
+    value: 2
   - assetGuid: 56ce767bbc82e144fb05ed923d6cdd23
     fieldName: minSpawnRadius
     value: 500
@@ -210,49 +210,49 @@ MonoBehaviour:
     value: 6
   - assetGuid: d5ae94eb4c1790c41a2f359df603376e
     fieldName: scale
-    value: 1
+    value: 3
   - assetGuid: 52282e6f161be19459c2f875f2fb9dcc
     fieldName: scale
-    value: 5
+    value: 6.767857
   - assetGuid: c1dd7716011f6474d865f002821df19d
     fieldName: scale
+    value: 3.98
+  - assetGuid: 5fae4a73cefa11f419ea4b31c0c63f90
+    fieldName: waveSize
+    value: 3
+  - assetGuid: 5fae4a73cefa11f419ea4b31c0c63f90
+    fieldName: timeBetweenWaves
+    value: 4
+  - assetGuid: 5fae4a73cefa11f419ea4b31c0c63f90
+    fieldName: minSpawnRadius
+    value: 500
+  - assetGuid: 5fae4a73cefa11f419ea4b31c0c63f90
+    fieldName: maxSpawnRadius
+    value: 1000
+  - assetGuid: 9b5a7f2d63bf9ab4fab687b4367c0480
+    fieldName: waveSize
+    value: 5
+  - assetGuid: 9b5a7f2d63bf9ab4fab687b4367c0480
+    fieldName: timeBetweenWaves
     value: 2
-  - assetGuid: 5fae4a73cefa11f419ea4b31c0c63f90
-    fieldName: waveSize
-    value: 3
-  - assetGuid: 5fae4a73cefa11f419ea4b31c0c63f90
-    fieldName: timeBetweenWaves
-    value: 4
-  - assetGuid: 5fae4a73cefa11f419ea4b31c0c63f90
-    fieldName: minSpawnRadius
-    value: 60
-  - assetGuid: 5fae4a73cefa11f419ea4b31c0c63f90
-    fieldName: maxSpawnRadius
-    value: 120
-  - assetGuid: 9b5a7f2d63bf9ab4fab687b4367c0480
-    fieldName: waveSize
-    value: 3
-  - assetGuid: 9b5a7f2d63bf9ab4fab687b4367c0480
-    fieldName: timeBetweenWaves
-    value: 4
   - assetGuid: 9b5a7f2d63bf9ab4fab687b4367c0480
     fieldName: minSpawnRadius
-    value: 60
+    value: 500
   - assetGuid: 9b5a7f2d63bf9ab4fab687b4367c0480
     fieldName: maxSpawnRadius
-    value: 120
+    value: 1000
   - assetGuid: 5578799cde85c8e41af815bbc077d9a9
     fieldName: waveSize
-    value: 3
+    value: 5
   - assetGuid: 5578799cde85c8e41af815bbc077d9a9
     fieldName: timeBetweenWaves
-    value: 4
+    value: 2
   - assetGuid: 5578799cde85c8e41af815bbc077d9a9
     fieldName: minSpawnRadius
-    value: 60
+    value: 500
   - assetGuid: 5578799cde85c8e41af815bbc077d9a9
     fieldName: maxSpawnRadius
-    value: 120
+    value: 1000
   - assetGuid: dc2dfd2b57b94894ab5f2fc8bbffb9d2
     fieldName: planetCount
     value: 3
@@ -328,3 +328,96 @@ MonoBehaviour:
   - assetGuid: fe0f208ec385f9e42bd0d3116ab83224
     fieldName: modifiers[2].maxValue
     value: 150
+  - assetGuid: b2f5067a11d5daa4faf3233147cf473a
+    fieldName: minZoneClearance
+    value: 500
+  - assetGuid: b2f5067a11d5daa4faf3233147cf473a
+    fieldName: maxZoneClearance
+    value: 500
+  - assetGuid: d312ab284a9992d459fd8a78c5539f0d
+    fieldName: minZoneClearance
+    value: 500
+  - assetGuid: d312ab284a9992d459fd8a78c5539f0d
+    fieldName: maxZoneClearance
+    value: 500
+  - assetGuid: fd8793828ffad5446be020e3c04bc69d
+    fieldName: minZoneClearance
+    value: 500
+  - assetGuid: fd8793828ffad5446be020e3c04bc69d
+    fieldName: maxZoneClearance
+    value: 500
+  - assetGuid: d5ae94eb4c1790c41a2f359df603376e
+    fieldName: firePointFovAngle
+    value: 90
+  - assetGuid: 52282e6f161be19459c2f875f2fb9dcc
+    fieldName: firePointFovAngle
+    value: 90
+  - assetGuid: c1dd7716011f6474d865f002821df19d
+    fieldName: firePointFovAngle
+    value: 90
+  - assetGuid: 91f3370a5ad3bbf4480fc56b72528317
+    fieldName: modifiers[0].minValue
+    value: 3
+  - assetGuid: 91f3370a5ad3bbf4480fc56b72528317
+    fieldName: modifiers[0].maxValue
+    value: 7
+  - assetGuid: 91f3370a5ad3bbf4480fc56b72528317
+    fieldName: modifiers[1].minValue
+    value: 1
+  - assetGuid: 91f3370a5ad3bbf4480fc56b72528317
+    fieldName: modifiers[1].maxValue
+    value: 2
+  - assetGuid: bc962ac82a914244d844cb48950e8a7b
+    fieldName: modifiers[0].minValue
+    value: 500
+  - assetGuid: bc962ac82a914244d844cb48950e8a7b
+    fieldName: modifiers[0].maxValue
+    value: 500
+  - assetGuid: bc962ac82a914244d844cb48950e8a7b
+    fieldName: modifiers[1].minValue
+    value: 3
+  - assetGuid: bc962ac82a914244d844cb48950e8a7b
+    fieldName: modifiers[1].maxValue
+    value: 7
+  - assetGuid: bc962ac82a914244d844cb48950e8a7b
+    fieldName: modifiers[2].minValue
+    value: 1
+  - assetGuid: bc962ac82a914244d844cb48950e8a7b
+    fieldName: modifiers[2].maxValue
+    value: 4
+  - assetGuid: 5578799cde85c8e41af815bbc077d9a9
+    fieldName: entries[0].count
+    value: 15
+  - assetGuid: 5578799cde85c8e41af815bbc077d9a9
+    fieldName: entries[1].count
+    value: 7
+  - assetGuid: 5578799cde85c8e41af815bbc077d9a9
+    fieldName: entries[2].count
+    value: 3
+  - assetGuid: 56ce767bbc82e144fb05ed923d6cdd23
+    fieldName: entries[0].count
+    value: 15
+  - assetGuid: 56ce767bbc82e144fb05ed923d6cdd23
+    fieldName: entries[1].count
+    value: 7
+  - assetGuid: 56ce767bbc82e144fb05ed923d6cdd23
+    fieldName: entries[2].count
+    value: 3
+  - assetGuid: 9b5a7f2d63bf9ab4fab687b4367c0480
+    fieldName: entries[0].count
+    value: 15
+  - assetGuid: 9b5a7f2d63bf9ab4fab687b4367c0480
+    fieldName: entries[1].count
+    value: 7
+  - assetGuid: 9b5a7f2d63bf9ab4fab687b4367c0480
+    fieldName: entries[2].count
+    value: 3
+  - assetGuid: 5fae4a73cefa11f419ea4b31c0c63f90
+    fieldName: entries[0].count
+    value: 15
+  - assetGuid: 5fae4a73cefa11f419ea4b31c0c63f90
+    fieldName: entries[1].count
+    value: 7
+  - assetGuid: 5fae4a73cefa11f419ea4b31c0c63f90
+    fieldName: entries[2].count
+    value: 3

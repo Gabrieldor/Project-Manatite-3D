@@ -121,6 +121,15 @@ namespace Manatite.Editor
                 return;
             }
 
+            // EnemySpawnData mixes top-level numerics with a non-numeric spawnMode enum and
+            // a per-entry count buried in an EnemySpawnEntry[], neither of which the generic
+            // reflection walk below can reach.
+            if (dataType == typeof(EnemySpawnData))
+            {
+                DrawEnemySpawnAssets();
+                return;
+            }
+
             var numericFields = dataType
                 .GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .Where(f => (f.FieldType == typeof(float) || f.FieldType == typeof(int))
@@ -379,6 +388,116 @@ namespace Manatite.Editor
                     var element = modifiersProperty.GetArrayElementAtIndex(i);
                     baseline.SetValue(guid, minKeys[i], element.FindPropertyRelative("minValue").floatValue);
                     baseline.SetValue(guid, maxKeys[i], element.FindPropertyRelative("maxValue").floatValue);
+                }
+
+                SaveBaseline();
+            }
+
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUI.indentLevel--;
+            EditorGUILayout.Space(8f);
+        }
+
+        private static readonly string[] EnemySpawnNumericFields =
+        {
+            "waveSize", "timeBetweenWaves", "minSpawnRadius", "maxSpawnRadius",
+        };
+
+        private void DrawEnemySpawnAssets()
+        {
+            var guids = AssetDatabase.FindAssets($"t:{nameof(EnemySpawnData)}", new[] { DataFolder });
+            foreach (var guid in guids)
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                var asset = AssetDatabase.LoadAssetAtPath<EnemySpawnData>(path);
+                if (asset != null)
+                {
+                    DrawEnemySpawnAsset(asset, guid);
+                }
+            }
+        }
+
+        private void DrawEnemySpawnAsset(EnemySpawnData asset, string guid)
+        {
+            EditorGUILayout.LabelField(asset.name, EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+
+            var serializedObject = new SerializedObject(asset);
+            serializedObject.Update();
+
+            var spawnModeProperty = serializedObject.FindProperty("spawnMode");
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.PropertyField(spawnModeProperty, new GUIContent("Spawn Mode"));
+            bool anyChanged = EditorGUI.EndChangeCheck();
+
+            foreach (var fieldName in EnemySpawnNumericFields)
+            {
+                var property = serializedObject.FindProperty(fieldName);
+                anyChanged |= DrawField(guid, fieldName, ObjectNames.NicifyVariableName(fieldName), property);
+            }
+
+            var entriesProperty = serializedObject.FindProperty("entries");
+            EditorGUILayout.LabelField("Entries", EditorStyles.miniBoldLabel);
+            EditorGUI.indentLevel++;
+
+            var countKeys = new string[entriesProperty.arraySize];
+            for (int i = 0; i < entriesProperty.arraySize; i++)
+            {
+                var element = entriesProperty.GetArrayElementAtIndex(i);
+                var prefabProperty = element.FindPropertyRelative("enemyPrefab");
+                var countProperty = element.FindPropertyRelative("count");
+
+                string prefabName = prefabProperty.objectReferenceValue != null
+                    ? prefabProperty.objectReferenceValue.name
+                    : $"Entry {i}";
+                countKeys[i] = $"entries[{i}].count";
+                EditorGUILayout.LabelField(prefabName, EditorStyles.miniLabel);
+                anyChanged |= DrawField(guid, countKeys[i], "Count", countProperty);
+            }
+
+            EditorGUI.indentLevel--;
+
+            if (anyChanged)
+            {
+                serializedObject.ApplyModifiedProperties();
+                EditorUtility.SetDirty(asset);
+            }
+
+            EditorGUILayout.BeginHorizontal();
+
+            if (GUILayout.Button("Reset all to standard", GUILayout.Width(160f)))
+            {
+                foreach (var fieldName in EnemySpawnNumericFields)
+                {
+                    ResetToStandard(guid, fieldName, serializedObject.FindProperty(fieldName));
+                }
+
+                for (int i = 0; i < entriesProperty.arraySize; i++)
+                {
+                    var countProperty = entriesProperty.GetArrayElementAtIndex(i).FindPropertyRelative("count");
+                    ResetToStandard(guid, countKeys[i], countProperty);
+                }
+
+                serializedObject.ApplyModifiedProperties();
+                EditorUtility.SetDirty(asset);
+            }
+
+            if (GUILayout.Button("Set all as standard", GUILayout.Width(160f)))
+            {
+                foreach (var fieldName in EnemySpawnNumericFields)
+                {
+                    var property = serializedObject.FindProperty(fieldName);
+                    float current = property.propertyType == SerializedPropertyType.Integer
+                        ? property.intValue
+                        : property.floatValue;
+                    baseline.SetValue(guid, fieldName, current);
+                }
+
+                for (int i = 0; i < entriesProperty.arraySize; i++)
+                {
+                    var countProperty = entriesProperty.GetArrayElementAtIndex(i).FindPropertyRelative("count");
+                    baseline.SetValue(guid, countKeys[i], countProperty.intValue);
                 }
 
                 SaveBaseline();

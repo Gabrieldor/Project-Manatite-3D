@@ -15,6 +15,6 @@ MonoBehaviour:
   material: {fileID: 2100000, guid: adcbf985a9ac56544b9368a274fef059, type: 2}
   minScale: 350
   maxScale: 550
-  minZoneRadiusMultiplier: 1.3
-  maxZoneRadiusMultiplier: 1.8
+  minZoneClearance: 500
+  maxZoneClearance: 500
   spawnTable: {fileID: 11400000, guid: 9b5a7f2d63bf9ab4fab687b4367c0480, type: 2}

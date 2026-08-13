@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.Globalization;
 using Manatite.Core;
-using Manatite.Data;
 using TMPro;
 using UnityEngine;
 
@@ -43,43 +40,10 @@ namespace Manatite.UI
                 return;
             }
 
-            ChipModifier[] modifiers = chip.Data.Modifiers;
-            var flatLines = new List<string>();
-            var percentLines = new List<string>();
-
-            for (int i = 0; i < modifiers.Length; i++)
-            {
-                float value = chip.RolledValues[i];
-                Color color = value > 0f ? positiveColor : value < 0f ? negativeColor : neutralColor;
-                string colorHex = ColorUtility.ToHtmlStringRGB(color);
-                string label = GetStatDisplayName(modifiers[i].StatTarget);
-
-                if (modifiers[i].ValueKind == ChipValueKind.Flat)
-                {
-                    string text = string.Format(CultureInfo.InvariantCulture, "{0:+0.#;-0.#;0} {1}", value, label);
-                    flatLines.Add($"<color=#{colorHex}>{text}</color>");
-                }
-                else
-                {
-                    string text = string.Format(CultureInfo.InvariantCulture, "{0:+0.#;-0.#;0}% {1}", value * 100f, label);
-                    percentLines.Add($"<color=#{colorHex}>{text}</color>");
-                }
-            }
-
-            if (flatStatText != null) flatStatText.text = string.Join("\n", flatLines);
-            if (percentStatText != null) percentStatText.text = string.Join("\n", percentLines);
+            ChipTooltipFormatter.BuildStatLines(chip, positiveColor, negativeColor, neutralColor, out string flatText, out string percentText);
+            if (flatStatText != null) flatStatText.text = flatText;
+            if (percentStatText != null) percentStatText.text = percentText;
             if (descriptionText != null) descriptionText.text = chip.Data.Description;
-        }
-
-        private static string GetStatDisplayName(ChipStatTarget target)
-        {
-            switch (target)
-            {
-                case ChipStatTarget.FireRate: return "Weapon Fire Rate";
-                case ChipStatTarget.Damage: return "Weapon Damage";
-                case ChipStatTarget.SplashRadius: return "Splash Radius";
-                default: return target.ToString();
-            }
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Manatite.Data
         [SerializeField] private EnemySpawnMode spawnMode = EnemySpawnMode.AllAtOnce;
         [Tooltip("Enemies spawned per wave. Ignored in AllAtOnce mode.")]
         [SerializeField] private int waveSize = 3;
-        [Tooltip("Seconds between waves. Ignored in AllAtOnce mode.")]
+        [Tooltip("Seconds to wait after a wave is fully killed before the next one spawns. Ignored in AllAtOnce mode.")]
         [SerializeField] private float timeBetweenWaves = 4f;
 
         [Header("Placement")]

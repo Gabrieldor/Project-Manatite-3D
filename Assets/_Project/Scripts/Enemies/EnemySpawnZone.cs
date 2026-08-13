@@ -8,11 +8,14 @@ namespace Manatite.Enemies
 {
     /// <summary>
     /// Encounter trigger: when the player enters, spawns enemies from
-    /// <see cref="EnemySpawnData"/> around the player's current position (all at once
-    /// or in timed waves) via <see cref="ObjectPooler"/>. Re-arms after a fixed cooldown
-    /// once the encounter has finished spawning. Fires <see cref="OnEncounterCleared"/>
-    /// once every enemy it spawned has been killed (fleeing past the leash distance
-    /// doesn't count as a kill, so running from a wave never "clears" it).
+    /// <see cref="EnemySpawnData"/> around the player's current position (all at once,
+    /// or in waves that each wait for the previous wave to be fully killed before the
+    /// next launches) via <see cref="ObjectPooler"/>. Re-arms after a fixed cooldown
+    /// once the encounter has finished spawning — unless it's been fully cleared, in which
+    /// case the zone is done for good and never spawns again. Fires
+    /// <see cref="OnEncounterCleared"/> once every enemy it spawned has been killed
+    /// (fleeing past the leash distance doesn't count as a kill, so running from a wave
+    /// never "clears" it, and the zone can still re-arm and be re-triggered).
     /// </summary>
     [RequireComponent(typeof(SphereCollider))]
     public sealed class EnemySpawnZone : MonoBehaviour
@@ -33,9 +36,11 @@ namespace Manatite.Enemies
         public static event System.Action<EnemySpawnZone> AnyZoneSpawned;
 
         private bool _armed = true;
+        private bool _encounterCleared;
         private Coroutine _spawnRoutine;
         private float _planetRadius;
         private int _remainingAlive;
+        private int _currentWaveAlive;
 
         private void Awake()
         {
@@ -55,7 +60,7 @@ namespace Manatite.Enemies
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!_armed || spawnData == null) return;
+            if (!_armed || _encounterCleared || spawnData == null) return;
 
             Rigidbody rb = other.attachedRigidbody;
             if (rb == null || !rb.CompareTag(GameLayers.PlayerTag)) return;
@@ -103,6 +108,7 @@ namespace Manatite.Enemies
                 int totalRemaining = TotalOf(remaining);
                 while (totalRemaining > 0)
                 {
+                    _currentWaveAlive = 0;
                     int toSpawn = Mathf.Min(spawnData.WaveSize, totalRemaining);
                     for (int spawned = 0; spawned < toSpawn; spawned++)
                     {
@@ -113,7 +119,12 @@ namespace Manatite.Enemies
 
                     totalRemaining = TotalOf(remaining);
                     if (totalRemaining > 0)
+                    {
+                        // Next wave only launches once every enemy from this one is dead,
+                        // not on a fixed timer — TimeBetweenWaves is just a breather after that.
+                        yield return new WaitUntil(() => _currentWaveAlive <= 0);
                         yield return new WaitForSeconds(spawnData.TimeBetweenWaves);
+                    }
                 }
             }
 
@@ -152,13 +163,18 @@ namespace Manatite.Enemies
         /// this zone's (already-finished) count.</summary>
         private void TrackKill(Health health)
         {
+            _currentWaveAlive++;
             System.Action onDied = null;
             onDied = () =>
             {
                 health.OnDied -= onDied;
                 _remainingAlive--;
+                _currentWaveAlive--;
                 if (_remainingAlive <= 0)
+                {
+                    _encounterCleared = true;
                     OnEncounterCleared?.Invoke();
+                }
             };
             health.OnDied += onDied;
         }
