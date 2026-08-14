@@ -1,5 +1,6 @@
 using Manatite.Combat;
 using Manatite.Environment;
+using Manatite.Player;
 using UnityEngine;
 
 namespace Manatite.Core.SaveSystem
@@ -10,6 +11,7 @@ namespace Manatite.Core.SaveSystem
     public sealed class RunSaveController : MonoBehaviour
     {
         [SerializeField] private Health playerHealth;
+        [SerializeField] private PlayerInventory playerInventory;
         [Tooltip("Autosaves whenever this reports a planet was beaten.")]
         [SerializeField] private PlanetSpawner planetSpawner;
 
@@ -25,8 +27,11 @@ namespace Manatite.Core.SaveSystem
 
         private void Start()
         {
-            if (PendingLoad.Data != null)
-                ApplyPlayerState(PendingLoad.Data.player);
+            if (PendingLoad.Data == null) return;
+
+            ApplyPlayerState(PendingLoad.Data.player);
+            if (playerInventory != null)
+                playerInventory.RestoreState(PendingLoad.Data.inventory);
         }
 
         private void ApplyPlayerState(PlayerSaveData data)
@@ -46,6 +51,9 @@ namespace Manatite.Core.SaveSystem
                 data.player.maxHealth = playerHealth.Max;
             }
 
+            if (playerInventory != null)
+                data.inventory = playerInventory.CaptureState();
+
             foreach (PlanetState state in FindObjectsByType<PlanetState>(FindObjectsSortMode.None))
             {
                 data.planets.Add(new PlanetSaveData
@@ -56,7 +64,8 @@ namespace Manatite.Core.SaveSystem
                     rotation = state.transform.rotation,
                     scale = state.Scale,
                     zoneRadius = state.ZoneRadius,
-                    beaten = state.Beaten
+                    beaten = state.Beaten,
+                    hasShop = state.GetComponentInChildren<ShopMarker>(true) != null
                 });
             }
 

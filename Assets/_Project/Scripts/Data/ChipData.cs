@@ -23,16 +23,31 @@ namespace Manatite.Data
         public ChipModifier[] Modifiers => modifiers;
         public string Description => description;
 
+        /// <summary>True for an in-memory-only chip built by <see cref="CreateMerged"/> — has
+        /// no backing .asset, so the save system must serialize its full definition inline
+        /// instead of referencing it by name via <see cref="Manatite.Data.ChipDatabaseData"/>.</summary>
+        public bool IsMerged { get; private set; }
+
+        /// <summary>For a merged chip, the asset name of the real (non-merged) chip whose
+        /// <see cref="Icon"/> this one inherited — <see cref="Manatite.Core.ChipMerger"/> always
+        /// reuses a parent's icon, so this traces back through any depth of re-merging to a real
+        /// <see cref="Manatite.Data.ChipDatabaseData"/> entry. Lets the save system reconstruct
+        /// the icon on load instead of dropping it, since a raw <see cref="Sprite"/> reference
+        /// can't portably round-trip through JSON. Unused (null) on a real, non-merged chip.</summary>
+        public string IconSourceId { get; private set; }
+
         /// <summary>Builds an in-memory-only chip (never saved as an .asset) for
         /// <see cref="Manatite.Core.ChipMerger"/>'s output — merging shouldn't litter the
         /// project with one new asset per fuse.</summary>
-        internal static ChipData CreateMerged(string displayName, Sprite icon, ChipModifier[] modifiers, string description)
+        internal static ChipData CreateMerged(string displayName, Sprite icon, ChipModifier[] modifiers, string description, string iconSourceId)
         {
             ChipData chip = CreateInstance<ChipData>();
             chip.displayName = displayName;
             chip.icon = icon;
             chip.modifiers = modifiers;
             chip.description = description;
+            chip.IsMerged = true;
+            chip.IconSourceId = iconSourceId;
             return chip;
         }
 

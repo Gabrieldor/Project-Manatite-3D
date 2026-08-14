@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Manatite.Audio;
 using Manatite.Core;
 using Manatite.Player;
 using UnityEngine;
@@ -121,6 +122,10 @@ namespace Manatite.UI
             if (_hoverImage != null) _hoverImage.color = _defaultColors[_hoverImage];
             _hoverImage = null;
             if (mergeButtonIcon != null) mergeButtonIcon.sprite = mergeButtonNormalSprite;
+
+            // The shop is closing (Cancel, or scene teardown) — hand back anything still parked
+            // in the merge row instead of leaving it stranded there until the shop reopens.
+            if (inventory != null) inventory.ReturnMergeSlotsToInventory();
         }
 
         private void Update()
@@ -159,6 +164,7 @@ namespace Manatite.UI
                 else if (step.y != 0) _pickerRow = Mathf.Clamp(_pickerRow + step.y, 0, InventoryRows - 1);
             }
             UpdateHoverHighlight();
+            AudioManager.PlaySfx(SfxCue.Hover);
         }
 
         private RectTransform GetCurrentSlot()
@@ -215,23 +221,30 @@ namespace Manatite.UI
 
             if (!IsPickerOpen)
             {
-                if (_mergeIndex < MergeSlotCount) OpenPicker(_mergeIndex);
+                if (_mergeIndex < MergeSlotCount)
+                {
+                    OpenPicker(_mergeIndex);
+                    AudioManager.PlaySfx(SfxCue.Confirm);
+                }
                 else if (mergeButton != null) mergeButton.onClick.Invoke();
                 return;
             }
 
             int inventoryIndex = _pickerRow * InventoryCols + _pickerCol;
             inventory.SwapMergeWithInventory(_pendingMergeIndex, inventoryIndex);
+            AudioManager.PlaySfx(SfxCue.Confirm);
             ClosePicker();
         }
 
-        private void OpenPicker(int mergeIndex)
+        private void OpenPicker(int mergeIndex) => OpenPickerAt(mergeIndex, 0);
+
+        private void OpenPickerAt(int mergeIndex, int inventoryIndex)
         {
             _pendingMergeIndex = mergeIndex;
             IsPickerOpen = true;
             if (inventoryPickerRoot != null) inventoryPickerRoot.SetActive(true);
-            _pickerRow = 0;
-            _pickerCol = 0;
+            _pickerRow = inventoryIndex / InventoryCols;
+            _pickerCol = inventoryIndex % InventoryCols;
             RefreshHover();
         }
 
@@ -247,12 +260,18 @@ namespace Manatite.UI
             RefreshHover();
         }
 
-        /// <summary>Wired to the Merge button's OnClick via <see cref="ShopPanel"/>. Refreshes
-        /// the hover afterward since slot 0 now holds the merged result and slot 1 is empty.</summary>
+        /// <summary>Wired to the Merge button's OnClick via <see cref="ShopPanel"/>. On success,
+        /// drops the merged result into the inventory grid and opens the picker on it — same as
+        /// if the player had pressed Select on an empty merge slot and then hovered the new
+        /// chip — so it's immediately visible instead of sitting in the merge row.</summary>
         public void TryMerge()
         {
+            AudioManager.PlaySfx(SfxCue.ChipMerge);
             if (inventory == null || !inventory.TryMerge()) return;
-            RefreshHover();
+
+            int index = inventory.PlaceMergeResultInInventory();
+            if (index >= 0) OpenPickerAt(0, index);
+            else RefreshHover();
         }
 
         /// <summary>Forces the hover tint/tooltip to re-apply even though the cursor hasn't

@@ -35,6 +35,19 @@ namespace Manatite.Data
         [Tooltip("Releases back to the pool once farther than this from the target (m). Safety valve until a proper despawn/death system exists.")]
         [SerializeField] private float leashDistance = 3000f;
 
+        [Header("Emerge")]
+        [Tooltip("Straight-line speed (m/s) while bursting away from the planet right after spawn, before normal pursuit takes over.")]
+        [SerializeField] private float emergeSpeed = 35f;
+        [Tooltip("Distance (m) the burst travels outward beyond its own spawn point before handing off to normal pursuit steering.")]
+        [SerializeField] private float emergeBurstDistance = 150f;
+
+        [Header("Death")]
+        [Tooltip("Pooled VFX spawned at the enemy's position when it dies. Optional.")]
+        [SerializeField] private GameObject deathVfxPrefab;
+        [Tooltip("World-space radius passed to the death VFX's IRadiusVfx.Play() — tune per " +
+                 "enemy type to read clearly against that type's actual (post-Scale) hull size.")]
+        [SerializeField] private float deathVfxRadius = 20f;
+
         [Header("Weapon")]
         [SerializeField] private WeaponFireMode fireMode = WeaponFireMode.Auto;
         [Tooltip("Shots per second.")]
@@ -54,10 +67,14 @@ namespace Manatite.Data
 
         public int MaxHealth => maxHealth;
         public float Scale => scale;
+        public GameObject DeathVfxPrefab => deathVfxPrefab;
+        public float DeathVfxRadius => deathVfxRadius;
         public float MoveSpeed => moveSpeed;
         public float TurnRate => turnRate;
         public float StopDistance => stopDistance;
         public float LeashDistance => leashDistance;
+        public float EmergeSpeed => emergeSpeed;
+        public float EmergeBurstDistance => emergeBurstDistance;
         public WeaponFireMode FireMode => fireMode;
         public float FireRate => fireRate;
         public float SingleFireDebounce => singleFireDebounce;

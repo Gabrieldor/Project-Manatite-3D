@@ -15,25 +15,30 @@ MonoBehaviour:
   sfxCues:
   - cue: 0
     data:
-      clips: []
+      clips:
+      - {fileID: 8300000, guid: 43e2997ede26edb469177465fff1849a, type: 3}
+      - {fileID: 8300000, guid: 0301f0643184b22499da0866d5abe656, type: 3}
+      - {fileID: 8300000, guid: 0301f0643184b22499da0866d5abe656, type: 3}
       volumeRange: {x: 1, y: 1}
-      pitchRange: {x: 1, y: 1}
+      pitchRange: {x: 0.9, y: 1.1}
       loop: 0
       loopStart: 0
       loopEnd: 0
   - cue: 1
     data:
-      clips: []
+      clips:
+      - {fileID: 8300000, guid: ef34537ff1bda994ca269a347260f8c7, type: 3}
       volumeRange: {x: 1, y: 1}
-      pitchRange: {x: 1, y: 1}
+      pitchRange: {x: 0.9, y: 1.1}
       loop: 0
       loopStart: 0
       loopEnd: 0
   - cue: 2
     data:
-      clips: []
+      clips:
+      - {fileID: 8300000, guid: 9dc8a5ae30d7df341bbde4120c7400ba, type: 3}
       volumeRange: {x: 1, y: 1}
-      pitchRange: {x: 1, y: 1}
+      pitchRange: {x: 0.9, y: 1.1}
       loop: 0
       loopStart: 0
       loopEnd: 0
@@ -68,6 +73,42 @@ MonoBehaviour:
       loop: 0
       loopStart: 0
       loopEnd: 0.44829932
+  - cue: 6
+    data:
+      clips:
+      - {fileID: 8300000, guid: 5d69a97a0dd82fb46b4eb99904bbdfd3, type: 3}
+      volumeRange: {x: 0.2, y: 0.2}
+      pitchRange: {x: 1, y: 1}
+      loop: 0
+      loopStart: 0
+      loopEnd: 0
+  - cue: 7
+    data:
+      clips:
+      - {fileID: 8300000, guid: c0f7cf6a952eea841baf9f1b78850411, type: 3}
+      volumeRange: {x: 0.3, y: 0.3}
+      pitchRange: {x: 1, y: 1}
+      loop: 0
+      loopStart: 0
+      loopEnd: 0
+  - cue: 8
+    data:
+      clips: []
+      volumeRange: {x: 1, y: 1}
+      pitchRange: {x: 1, y: 1}
+      loop: 0
+      loopStart: 0
+      loopEnd: 0
+  - cue: 9
+    data:
+      clips:
+      - {fileID: 8300000, guid: 34680f198b76b194497894dbe86410df, type: 3}
+      - {fileID: 8300000, guid: 5d0de6f39a4c85447a6558ff37e36deb, type: 3}
+      volumeRange: {x: 1, y: 1}
+      pitchRange: {x: 0.9, y: 1.1}
+      loop: 0
+      loopStart: 0
+      loopEnd: 0
   musicTracks:
   - track: 1
     clip: {fileID: 8300000, guid: 252bd4fb2edae5848b5b909affe1b4f8, type: 3}

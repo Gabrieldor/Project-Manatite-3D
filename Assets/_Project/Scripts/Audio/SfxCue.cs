@@ -8,5 +8,9 @@ namespace Manatite.Audio
         ThrusterLoop,
         Explosion,
         Lightning,
+        Hover,
+        Confirm,
+        ChipEquip,
+        ChipMerge,
     }
 }

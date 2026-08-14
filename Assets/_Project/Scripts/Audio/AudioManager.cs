@@ -213,8 +213,15 @@ namespace Manatite.Audio
             source.pitch = data.GetPitch();
             source.volume = data.GetVolume() * volumeScale * SfxVolume01;
             source.clip = data.GetClip();
+            // Menu cues must still be heard while AudioListener.pause is set (PauseMenu freezes
+            // gameplay via Time.timeScale + AudioListener.pause together) — otherwise Play()
+            // silently starts at position 0 and every queued menu sound dumps out at once on unpause.
+            source.ignoreListenerPause = IsUiCue(cue);
             source.Play();
         }
+
+        private static bool IsUiCue(SfxCue cue) =>
+            cue == SfxCue.Hover || cue == SfxCue.Confirm || cue == SfxCue.ChipEquip || cue == SfxCue.ChipMerge;
 
         /// <summary>Plays a loopable cue: 0 to its loop-start plays once, then the loop-start/
         /// loop-end region repeats seamlessly until <see cref="StopLoopingSfx"/> is called.

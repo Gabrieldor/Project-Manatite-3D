@@ -18,6 +18,10 @@ MonoBehaviour:
   turnRate: 90
   stopDistance: 95
   leashDistance: 3000
+  emergeSpeed: 35
+  emergeBurstDistance: 150
+  deathVfxPrefab: {fileID: 8473975915576155777, guid: ce2c6876a0069c840b9161d893986c5b, type: 3}
+  deathVfxRadius: 225
   fireMode: 0
   fireRate: 0.25
   singleFireDebounce: 0.05

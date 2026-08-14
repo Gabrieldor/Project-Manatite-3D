@@ -8,9 +8,11 @@ namespace Manatite.Enemies
 {
     /// <summary>
     /// Encounter trigger: when the player enters, spawns enemies from
-    /// <see cref="EnemySpawnData"/> around the player's current position (all at once,
-    /// or in waves that each wait for the previous wave to be fully killed before the
-    /// next launches) via <see cref="ObjectPooler"/>. Re-arms after a fixed cooldown
+    /// <see cref="EnemySpawnData"/> in a cluster behind the planet's far side from the
+    /// player (all at once, or in waves that each wait for the previous wave to be fully
+    /// killed before the next launches) via <see cref="ObjectPooler"/> — each enemy then
+    /// bursts outward from there (see <see cref="EnemyController"/>'s emerge state) before
+    /// settling into normal pursuit. Re-arms after a fixed cooldown
     /// once the encounter has finished spawning — unless it's been fully cleared, in which
     /// case the zone is done for good and never spawns again. Fires
     /// <see cref="OnEncounterCleared"/> once every enemy it spawned has been killed
@@ -24,6 +26,8 @@ namespace Manatite.Enemies
         [SerializeField] private EnemySpawnData spawnData;
         [Tooltip("Seconds after an encounter finishes spawning before this zone can trigger again.")]
         [SerializeField] private float rearmCooldown = 30f;
+        [Tooltip("Half-angle (degrees) of the cone, centered on the planet's far side from the player, that enemies spawn within — keeps them clustered behind the planet without stacking exactly on one point.")]
+        [SerializeField] private float emergeConeHalfAngle = 35f;
 
         public event System.Action OnEncounterStarted;
         public event System.Action OnEncounterCleared;
@@ -95,9 +99,11 @@ namespace Manatite.Enemies
 
             if (spawnData.SpawnMode == EnemySpawnMode.AllAtOnce)
             {
+                // Single batch, so one read of the player's position covers the whole spawn.
+                Vector3 backDirection = BackDirectionFrom(player.position);
                 foreach (EnemySpawnEntry entry in entries)
                     for (int i = 0; i < entry.count; i++)
-                        SpawnOne(entry.enemyPrefab, player);
+                        SpawnOne(entry.enemyPrefab, player, backDirection);
             }
             else
             {
@@ -108,12 +114,16 @@ namespace Manatite.Enemies
                 int totalRemaining = TotalOf(remaining);
                 while (totalRemaining > 0)
                 {
+                    // Re-measured every wave (not just once for the whole encounter) so a
+                    // later wave still emerges from behind the planet as seen from wherever
+                    // the player has actually flown to since the encounter started.
+                    Vector3 backDirection = BackDirectionFrom(player.position);
                     _currentWaveAlive = 0;
                     int toSpawn = Mathf.Min(spawnData.WaveSize, totalRemaining);
                     for (int spawned = 0; spawned < toSpawn; spawned++)
                     {
                         int entryIndex = NextEntryWithRemaining(remaining);
-                        SpawnOne(entries[entryIndex].enemyPrefab, player);
+                        SpawnOne(entries[entryIndex].enemyPrefab, player, backDirection);
                         remaining[entryIndex]--;
                     }
 
@@ -132,30 +142,49 @@ namespace Manatite.Enemies
             _armed = true;
         }
 
-        private void SpawnOne(GameObject prefab, Transform player)
+        /// <summary>Direction from the planet's center pointing away from the player —
+        /// i.e. toward the planet's far side as currently seen from the player.</summary>
+        private Vector3 BackDirectionFrom(Vector3 playerPosition)
+        {
+            Vector3 fromPlayer = transform.position - playerPosition;
+            return fromPlayer.sqrMagnitude > 0.0001f ? fromPlayer.normalized : Vector3.up;
+        }
+
+        private void SpawnOne(GameObject prefab, Transform player, Vector3 backDirection)
         {
             if (prefab == null) return;
 
-            Vector3 offset = UnityEngine.Random.onUnitSphere * UnityEngine.Random.Range(spawnData.MinSpawnRadius, spawnData.MaxSpawnRadius);
-            Vector3 spawnPos = player.position + offset;
+            // Spawn within a cone around the planet's far side from the player, clear of
+            // its surface, rather than scattered around the player — enemies then burst
+            // outward from there (EnemyController's emerge state) instead of popping in
+            // already next to the player.
+            Vector3 dir = RandomDirectionInCone(backDirection, emergeConeHalfAngle);
+            float distance = _planetRadius + UnityEngine.Random.Range(spawnData.MinSpawnRadius, spawnData.MaxSpawnRadius);
+            Vector3 spawnPos = transform.position + dir * distance;
 
-            // Clamp clear of the planet's surface: the offset above is relative to the
-            // player, not the planet, so on a large planet it can otherwise land inside
-            // the mesh. spawnData.MinSpawnRadius doubles as the required surface clearance.
-            Vector3 fromPlanet = spawnPos - transform.position;
-            float minDistance = _planetRadius + spawnData.MinSpawnRadius;
-            if (fromPlanet.sqrMagnitude < minDistance * minDistance)
-            {
-                Vector3 dir = fromPlanet.sqrMagnitude > 0.0001f ? fromPlanet.normalized : Vector3.up;
-                spawnPos = transform.position + dir * minDistance;
-            }
-
-            GameObject instance = ObjectPooler.Get(prefab, spawnPos, Quaternion.LookRotation(-offset.normalized, Vector3.up));
+            Vector3 up = Mathf.Abs(Vector3.Dot(dir, Vector3.up)) > 0.99f ? Vector3.forward : Vector3.up;
+            GameObject instance = ObjectPooler.Get(prefab, spawnPos, Quaternion.LookRotation(dir, up));
             if (instance.TryGetComponent(out EnemyController controller))
-                controller.Initialize(player);
+                controller.Initialize(player, transform.position);
 
             if (instance.TryGetComponent(out Health health))
                 TrackKill(health);
+        }
+
+        /// <summary>Uniformly samples a direction within <paramref name="halfAngleDegrees"/>
+        /// of <paramref name="coneDirection"/>, used to spread spawns around the planet's
+        /// far side without stacking them on one exact point.</summary>
+        private static Vector3 RandomDirectionInCone(Vector3 coneDirection, float halfAngleDegrees)
+        {
+            Vector3 up = Mathf.Abs(Vector3.Dot(coneDirection, Vector3.up)) > 0.99f ? Vector3.forward : Vector3.up;
+            Vector3 right = Vector3.Cross(up, coneDirection).normalized;
+            Vector3 forward = Vector3.Cross(coneDirection, right).normalized;
+
+            float polar = UnityEngine.Random.Range(0f, halfAngleDegrees) * Mathf.Deg2Rad;
+            float azimuth = UnityEngine.Random.Range(0f, 360f) * Mathf.Deg2Rad;
+
+            Vector3 spread = Mathf.Cos(azimuth) * right + Mathf.Sin(azimuth) * forward;
+            return (Mathf.Cos(polar) * coneDirection + Mathf.Sin(polar) * spread).normalized;
         }
 
         /// <summary>Subscribes with a self-unsubscribing handler so a pooled enemy instance

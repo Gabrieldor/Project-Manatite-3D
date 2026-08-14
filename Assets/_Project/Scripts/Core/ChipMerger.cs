@@ -32,8 +32,11 @@ namespace Manatite.Core
             // Placeholder until real fused-chip art exists — reuses the first chip's icon
             // rather than inventing new art.
             Sprite icon = a.Data.Icon;
+            // Traces through any depth of re-merging back to the real chip that donated the
+            // icon, so the save system can restore it by asset id instead of a raw reference.
+            string iconSourceId = a.Data.IsMerged ? a.Data.IconSourceId : a.Data.name;
 
-            ChipData merged = ChipData.CreateMerged(name, icon, modifiers, description);
+            ChipData merged = ChipData.CreateMerged(name, icon, modifiers, description, iconSourceId);
             return new ChipInstance(merged, rolledValues);
         }
 

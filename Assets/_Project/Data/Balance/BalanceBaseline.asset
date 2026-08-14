@@ -421,3 +421,21 @@ MonoBehaviour:
   - assetGuid: 5fae4a73cefa11f419ea4b31c0c63f90
     fieldName: entries[2].count
     value: 3
+  - assetGuid: d5ae94eb4c1790c41a2f359df603376e
+    fieldName: emergeSpeed
+    value: 35
+  - assetGuid: d5ae94eb4c1790c41a2f359df603376e
+    fieldName: emergeBurstDistance
+    value: 150
+  - assetGuid: 52282e6f161be19459c2f875f2fb9dcc
+    fieldName: emergeSpeed
+    value: 35
+  - assetGuid: 52282e6f161be19459c2f875f2fb9dcc
+    fieldName: emergeBurstDistance
+    value: 150
+  - assetGuid: c1dd7716011f6474d865f002821df19d
+    fieldName: emergeSpeed
+    value: 35
+  - assetGuid: c1dd7716011f6474d865f002821df19d
+    fieldName: emergeBurstDistance
+    value: 150

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Manatite.Audio;
 using Manatite.Core;
 using Manatite.Player;
 using UnityEngine;
@@ -141,6 +142,7 @@ namespace Manatite.UI
             if (step.x != 0) MoveHorizontal(step.x);
             else if (step.y != 0) MoveVertical(step.y);
             UpdateHoverHighlight();
+            AudioManager.PlaySfx(SfxCue.Hover);
         }
 
         private void MoveHorizontal(int delta)
@@ -225,6 +227,7 @@ namespace Manatite.UI
                 if (inventory.IsSlotEmpty(current.isEquip, current.index)) return;
                 _heldFrom = current;
                 BeginBlink(GetCurrentSlot());
+                AudioManager.PlaySfx(SfxCue.Confirm);
                 return;
             }
 
@@ -237,6 +240,8 @@ namespace Manatite.UI
             }
 
             inventory.TrySwap(_heldFrom.Value.isEquip, _heldFrom.Value.index, current.isEquip, current.index);
+            AudioManager.PlaySfx(SfxCue.Confirm);
+            if (current.isEquip) AudioManager.PlaySfx(SfxCue.ChipEquip);
             ClearSelection();
             _heldFrom = null;
             RefreshHover();

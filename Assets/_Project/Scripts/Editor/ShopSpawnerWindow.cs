@@ -74,6 +74,30 @@ namespace Manatite.Editor
             {
                 marker.Initialize(shopPanel);
             }
+
+            // Parent under the nearest planet (world position unchanged) so this debug spawn is
+            // findable by RunSaveController.Save()'s per-planet ShopMarker scan and survives a
+            // save/reload exactly like a real planet-clear drop, instead of vanishing on load.
+            PlanetState nearestPlanet = FindNearestPlanet(spawnPos);
+            if (nearestPlanet != null)
+                instance.transform.SetParent(nearestPlanet.transform, worldPositionStays: true);
+        }
+
+        private static PlanetState FindNearestPlanet(Vector3 position)
+        {
+            PlanetState[] planets = Object.FindObjectsByType<PlanetState>(FindObjectsSortMode.None);
+            PlanetState nearest = null;
+            float nearestSqrDistance = float.MaxValue;
+            foreach (PlanetState planet in planets)
+            {
+                float sqrDistance = (planet.transform.position - position).sqrMagnitude;
+                if (sqrDistance < nearestSqrDistance)
+                {
+                    nearestSqrDistance = sqrDistance;
+                    nearest = planet;
+                }
+            }
+            return nearest;
         }
     }
 }

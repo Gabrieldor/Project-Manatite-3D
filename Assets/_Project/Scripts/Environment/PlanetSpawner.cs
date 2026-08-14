@@ -87,7 +87,7 @@ namespace Manatite.Environment
                 if (type == null) continue;
 
                 float radius = saved.scale * 0.5f;
-                SpawnPlanet(type, saved.position, saved.rotation, saved.scale, radius, saved.planetId, saved.zoneRadius, saved.beaten);
+                SpawnPlanet(type, saved.position, saved.rotation, saved.scale, radius, saved.planetId, saved.zoneRadius, saved.beaten, saved.hasShop);
                 centers[i] = saved.position;
             }
 
@@ -160,7 +160,7 @@ namespace Manatite.Environment
                 center.z + Random.Range(-extents.z, extents.z));
         }
 
-        private void SpawnPlanet(PlanetData type, Vector3 position, Quaternion rotation, float scale, float radius, int planetId, float zoneRadius = -1f, bool beaten = false)
+        private void SpawnPlanet(PlanetData type, Vector3 position, Quaternion rotation, float scale, float radius, int planetId, float zoneRadius = -1f, bool beaten = false, bool hasShop = false)
         {
             GameObject instance = Instantiate(planetPrefab, position, rotation, transform);
 
@@ -186,6 +186,8 @@ namespace Manatite.Environment
             state.Beaten = beaten;
             if (beaten && clearedRing != null)
                 clearedRing.Show();
+            if (hasShop)
+                SpawnShopMarker(instance.transform, radius);
 
             zone.OnEncounterCleared += () =>
             {
@@ -202,8 +204,18 @@ namespace Manatite.Environment
         /// <see cref="shopMarkerPrefab"/> above the planet's surface.</summary>
         private void RollShop(LootTableData lootTable, Transform planetRoot, float radius)
         {
-            if (lootTable == null || shopMarkerPrefab == null) return;
+            if (lootTable == null) return;
             if (Random.value > lootTable.ShopChance) return;
+
+            SpawnShopMarker(planetRoot, radius);
+        }
+
+        /// <summary>Instantiates <see cref="shopMarkerPrefab"/> above the planet's surface,
+        /// unconditionally — used both by a fresh <see cref="RollShop"/> success and by
+        /// restoring a planet whose save recorded an already-rolled shop marker.</summary>
+        private void SpawnShopMarker(Transform planetRoot, float radius)
+        {
+            if (shopMarkerPrefab == null) return;
 
             GameObject marker = Instantiate(shopMarkerPrefab, planetRoot, false);
             marker.transform.localPosition = Vector3.up * (radius + shopMarkerHeightOffset);

@@ -20,6 +20,8 @@ namespace Manatite.UI
 
             for (int i = 0; i < modifiers.Length; i++)
             {
+                if (modifiers[i].StatTarget == ChipStatTarget.SplashRadius) continue;
+
                 float value = chip.RolledValues[i];
                 Color color = value > 0f ? positiveColor : value < 0f ? negativeColor : neutralColor;
                 string colorHex = ColorUtility.ToHtmlStringRGB(color);
@@ -48,6 +50,11 @@ namespace Manatite.UI
                 case ChipStatTarget.FireRate: return "Weapon Fire Rate";
                 case ChipStatTarget.Damage: return "Weapon Damage";
                 case ChipStatTarget.SplashRadius: return "Splash Radius";
+                case ChipStatTarget.CorrosionDuration: return "Corrosion Duration";
+                case ChipStatTarget.CorrosionDps: return "Corrosion DPS";
+                case ChipStatTarget.LightningRange: return "Lightning Range";
+                case ChipStatTarget.LightningChainCount: return "Lightning Chain Count";
+                case ChipStatTarget.LightningDamage: return "Lightning Damage";
                 default: return target.ToString();
             }
         }
