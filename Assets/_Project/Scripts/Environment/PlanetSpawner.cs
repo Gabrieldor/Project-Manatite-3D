@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Manatite.Core;
 using Manatite.Core.SaveSystem;
 using Manatite.Data;
 using Manatite.Enemies;
@@ -37,6 +38,11 @@ namespace Manatite.Environment
 
         private PlayerInventory _playerInventory;
 
+        /// <summary>Every planet spawned in the current batch (fresh field or loaded save),
+        /// tracked so a full-field clear can be detected and the batch torn down for
+        /// <see cref="RegenerateField"/>.</summary>
+        private readonly List<PlanetState> _activePlanets = new List<PlanetState>();
+
         private void Start()
         {
             if (planetPrefab == null) return;
@@ -51,8 +57,21 @@ namespace Manatite.Environment
 
             if (spawnData == null) return;
 
+            Vector3[] centers = SpawnRandomBatch(null);
+            FacePlayerAtNearestPlanet(centers);
+        }
+
+        /// <summary>Scatters a fresh batch of <see cref="PlanetSpawnData.PlanetCount"/> planets,
+        /// either across the configured field volume (<paramref name="centerOverride"/> null,
+        /// initial scene spawn) or re-centered on the player (endless-field regeneration once
+        /// every current planet is beaten — see <see cref="RegenerateField"/>). Returns the
+        /// spawned planets' centers for optional ship-facing.</summary>
+        private Vector3[] SpawnRandomBatch(Vector3? centerOverride)
+        {
             PlanetData[] types = spawnData.PlanetTypes;
-            if (types == null || types.Length == 0) return;
+            if (types == null || types.Length == 0) return System.Array.Empty<Vector3>();
+
+            Vector3 fieldCenter = centerOverride ?? spawnData.FieldCenter;
 
             var centers = new Vector3[spawnData.PlanetCount];
             var radii = new float[spawnData.PlanetCount];
@@ -63,14 +82,43 @@ namespace Manatite.Environment
                 float scale = Random.Range(type.MinScale, type.MaxScale);
                 float radius = scale * 0.5f;
 
-                Vector3 position = FindPosition(radius, centers, radii, i);
+                Vector3 position = FindPosition(fieldCenter, radius, centers, radii, i);
                 centers[i] = position;
                 radii[i] = radius;
 
                 SpawnPlanet(type, position, Random.rotation, scale, radius, i);
             }
 
-            FacePlayerAtNearestPlanet(centers);
+            return centers;
+        }
+
+        /// <summary>Called once the last still-active planet in the current batch is beaten:
+        /// bumps the run's persistent difficulty tier (see <see cref="DifficultyScale"/>,
+        /// read by <see cref="EnemySpawnZone"/>/<see cref="Enemies.EnemyController"/>/
+        /// <see cref="Enemies.EnemyWeapon"/>), tears down the fully-looted batch, and scatters a
+        /// fresh one centered on the player's current position so the run continues endlessly.</summary>
+        private void RegenerateField()
+        {
+            if (spawnData == null) return;
+
+            DifficultyScale.Tier++;
+
+            foreach (PlanetState planet in _activePlanets)
+                if (planet != null) Destroy(planet.gameObject);
+            _activePlanets.Clear();
+
+            Vector3? center = playerRigidbody != null ? (Vector3?)playerRigidbody.position : null;
+            SpawnRandomBatch(center);
+        }
+
+        /// <summary>True once every planet in the current batch has been beaten — the trigger
+        /// for <see cref="RegenerateField"/>.</summary>
+        private bool AllPlanetsBeaten()
+        {
+            if (_activePlanets.Count == 0) return false;
+            foreach (PlanetState planet in _activePlanets)
+                if (planet != null && !planet.Beaten) return false;
+            return true;
         }
 
         private void SpawnFromSave(List<PlanetSaveData> planets)
@@ -128,13 +176,13 @@ namespace Manatite.Environment
             rb.rotation = Quaternion.LookRotation(dir, up);
         }
 
-        private Vector3 FindPosition(float radius, Vector3[] centers, float[] radii, int placedCount)
+        private Vector3 FindPosition(Vector3 fieldCenter, float radius, Vector3[] centers, float[] radii, int placedCount)
         {
-            Vector3 position = RandomPointInField();
+            Vector3 position = RandomPointInField(fieldCenter);
             for (int attempt = 0; attempt < spawnData.MaxPlacementAttempts; attempt++)
             {
                 if (IsClear(position, radius, centers, radii, placedCount)) break;
-                position = RandomPointInField();
+                position = RandomPointInField(fieldCenter);
             }
             return position;
         }
@@ -150,9 +198,8 @@ namespace Manatite.Environment
             return true;
         }
 
-        private Vector3 RandomPointInField()
+        private Vector3 RandomPointInField(Vector3 center)
         {
-            Vector3 center = spawnData.FieldCenter;
             Vector3 extents = spawnData.FieldHalfExtents;
             return new Vector3(
                 center.x + Random.Range(-extents.x, extents.x),
@@ -188,6 +235,7 @@ namespace Manatite.Environment
                 clearedRing.Show();
             if (hasShop)
                 SpawnShopMarker(instance.transform, radius);
+            _activePlanets.Add(state);
 
             zone.OnEncounterCleared += () =>
             {
@@ -196,6 +244,13 @@ namespace Manatite.Environment
                     clearedRing.Show();
                 RollLoot(type.LootTable);
                 RollShop(type.LootTable, instance.transform, radius);
+
+                // Order matters: regenerate (and bump the difficulty tier) before the
+                // OnPlanetBeaten autosave below, so the save captures the new field/tier
+                // rather than the just-cleared one.
+                if (AllPlanetsBeaten())
+                    RegenerateField();
+
                 OnPlanetBeaten?.Invoke();
             };
         }

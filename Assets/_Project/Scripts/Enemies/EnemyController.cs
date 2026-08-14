@@ -30,6 +30,11 @@ namespace Manatite.Enemies
         public Transform Target => _target;
         public Vector3 TargetVelocity => _targetRigidbody != null ? _targetRigidbody.linearVelocity : Vector3.zero;
 
+        /// <summary>This enemy's own <see cref="Health"/> — the attacker reference passed to
+        /// <see cref="Manatite.Weapons.ProjectileLauncher.Fire"/> so a reflected hit can be
+        /// redirected back to whoever fired it.</summary>
+        public Health Health => _health;
+
         private void Awake()
         {
             _rb = GetComponent<Rigidbody>();
@@ -56,7 +61,7 @@ namespace Manatite.Enemies
         private void ApplyData()
         {
             if (data == null) return;
-            _health.SetMaxHealth(data.MaxHealth);
+            _health.SetMaxHealth(Mathf.CeilToInt(data.MaxHealth * DifficultyScale.Multiplier));
             transform.localScale = Vector3.one * data.Scale;
         }
 
@@ -127,7 +132,7 @@ namespace Manatite.Enemies
             Quaternion desiredRotation = Quaternion.LookRotation(dir, up);
             _rb.MoveRotation(Quaternion.RotateTowards(transform.rotation, desiredRotation, data.TurnRate * Time.fixedDeltaTime));
 
-            _rb.linearVelocity = distance > data.StopDistance ? transform.forward * data.MoveSpeed : Vector3.zero;
+            _rb.linearVelocity = distance > data.StopDistance ? transform.forward * (data.MoveSpeed * DifficultyScale.Multiplier) : Vector3.zero;
         }
 
         /// <summary>Straight radial burst away from the planet center, no steering, so the

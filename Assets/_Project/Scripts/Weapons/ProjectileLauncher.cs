@@ -1,6 +1,8 @@
 using Manatite.Audio;
 using Manatite.Combat;
 using Manatite.Core;
+using Manatite.Data;
+using Manatite.Player;
 using UnityEngine;
 
 namespace Manatite.Weapons
@@ -15,10 +17,10 @@ namespace Manatite.Weapons
     /// </summary>
     internal static class ProjectileLauncher
     {
-        public static void Fire(GameObject projectilePrefab, float projectileSpeed, float projectileLifetime, Transform firePoint, Collider ownerCollider, in EffectProfile profile, GameObject hitMarkerPrefab = null, float projectileScale = 1f)
-            => Fire(projectilePrefab, projectileSpeed, projectileLifetime, firePoint.position, firePoint.rotation, ownerCollider, profile, hitMarkerPrefab, projectileScale);
+        public static void Fire(GameObject projectilePrefab, float projectileSpeed, float projectileLifetime, Transform firePoint, Collider ownerCollider, in EffectProfile profile, GameObject hitMarkerPrefab = null, float projectileScale = 1f, Health attackerHealth = null)
+            => Fire(projectilePrefab, projectileSpeed, projectileLifetime, firePoint.position, firePoint.rotation, ownerCollider, profile, hitMarkerPrefab, projectileScale, attackerHealth);
 
-        public static void Fire(GameObject projectilePrefab, float projectileSpeed, float projectileLifetime, Vector3 position, Quaternion rotation, Collider ownerCollider, in EffectProfile profile, GameObject hitMarkerPrefab = null, float projectileScale = 1f)
+        public static void Fire(GameObject projectilePrefab, float projectileSpeed, float projectileLifetime, Vector3 position, Quaternion rotation, Collider ownerCollider, in EffectProfile profile, GameObject hitMarkerPrefab = null, float projectileScale = 1f, Health attackerHealth = null)
         {
             GameObject instance = ObjectPooler.Get(projectilePrefab, position, rotation);
             // Read the scale from the prefab asset (not the pooled instance) so a stale scale
@@ -34,7 +36,7 @@ namespace Manatite.Weapons
             // `profile` is an `in` parameter, which a closure can't capture directly.
             EffectProfile capturedProfile = profile;
             GameObject capturedHitMarker = hitMarkerPrefab;
-            projectile.OnHit += (_, collision) => ApplyPrimaryHit(collision, capturedProfile, ownerTag, capturedHitMarker);
+            projectile.OnHit += (_, collision) => ApplyPrimaryHit(collision, capturedProfile, ownerTag, capturedHitMarker, attackerHealth);
             projectile.Launch(projectileSpeed, projectileLifetime);
 
             // The player's own gun always sounds equally present (2D); anything else firing
@@ -44,13 +46,13 @@ namespace Manatite.Weapons
             else AudioManager.PlaySfx3D(SfxCue.Shot, position);
         }
 
-        private static void ApplyPrimaryHit(Collision collision, EffectProfile profile, string ownerTag, GameObject hitMarkerPrefab)
+        private static void ApplyPrimaryHit(Collision collision, EffectProfile profile, string ownerTag, GameObject hitMarkerPrefab, Health attackerHealth)
         {
             Health primaryHealth = collision.collider.GetComponentInParent<Health>();
             Vector3 hitPoint = collision.contactCount > 0 ? collision.GetContact(0).point : collision.collider.transform.position;
             hitPoint = ClampToTargetBounds(hitPoint, primaryHealth);
 
-            DamageHealth(primaryHealth, profile.Damage, ownerTag);
+            DamageHealth(primaryHealth, profile.Damage, ownerTag, attackerHealth);
 
             // Feedback for the player's own shots landing, regardless of any chip effect.
             if (primaryHealth != null && ownerTag == GameLayers.PlayerTag)
@@ -73,10 +75,13 @@ namespace Manatite.Weapons
 
         // Shared by every IProcEffect handler so hit-taken/hit-dealt feedback stays consistent
         // regardless of which effect caused the damage.
-        internal static void DamageHealth(Health health, int damage, string ownerTag)
+        internal static void DamageHealth(Health health, int damage, string ownerTag, Health attackerHealth = null)
         {
             if (health == null) return;
             if (ownerTag != null && health.CompareTag(ownerTag)) return;
+
+            if (health.CompareTag(GameLayers.PlayerTag) && TryReflect(health, damage, attackerHealth))
+                return;
 
             health.TakeDamage(damage);
 
@@ -84,6 +89,25 @@ namespace Manatite.Weapons
             // equally audible regardless of where the hit landed.
             if (health.CompareTag(GameLayers.PlayerTag)) AudioManager.PlaySfx(SfxCue.HitTaken);
             else if (ownerTag == GameLayers.PlayerTag) AudioManager.PlaySfx(SfxCue.HitDealt);
+        }
+
+        // Reflect chip: on a successful roll the player takes no damage at all, and the
+        // attacker (if it's still alive) takes that same amount instead. Routed back through
+        // DamageHealth (not a raw TakeDamage) so the counter-hit gets normal HitDealt audio and
+        // friendly-fire tag handling — never through ProcBus, so it can't chain into another
+        // chip's proc.
+        private static bool TryReflect(Health playerHealth, int damage, Health attackerHealth)
+        {
+            PlayerInventory inventory = playerHealth.GetComponentInParent<PlayerInventory>();
+            if (inventory == null) return false;
+
+            float chance = inventory.GetModifiedFloat(ChipStatTarget.ReflectChance, 0f);
+            if (chance <= 0f || Random.value > chance) return false;
+
+            if (attackerHealth != null && attackerHealth.IsAlive)
+                DamageHealth(attackerHealth, damage, GameLayers.PlayerTag);
+
+            return true;
         }
 
         private static void SpawnHitMarker(GameObject hitMarkerPrefab, Vector3 position)

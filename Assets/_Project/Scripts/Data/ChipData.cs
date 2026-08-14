@@ -17,11 +17,15 @@ namespace Manatite.Data
         [Tooltip("What this chip's modifier does, shown in the inventory tooltip's bottom 2/3.")]
         [TextArea]
         [SerializeField] private string description = "";
+        [Tooltip("If true, selecting this chip in the inventory consumes it immediately (applies " +
+            "its modifiers once, e.g. a heal) instead of picking it up to equip/move.")]
+        [SerializeField] private bool isConsumable;
 
         public string DisplayName => displayName;
         public Sprite Icon => icon;
         public ChipModifier[] Modifiers => modifiers;
         public string Description => description;
+        public bool IsConsumable => isConsumable;
 
         /// <summary>True for an in-memory-only chip built by <see cref="CreateMerged"/> — has
         /// no backing .asset, so the save system must serialize its full definition inline

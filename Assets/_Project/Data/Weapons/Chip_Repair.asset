@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc24923d8236c774fa5c82ba297cfe63, type: 3}
+  m_Name: Chip_Repair
+  m_EditorClassIdentifier: Manatite.Runtime::Manatite.Data.ChipData
+  displayName: Repair Chip
+  icon: {fileID: 21300000, guid: 14e2443278635754d849c75b03cb4782, type: 3}
+  modifiers:
+  - statTarget: 11
+    valueKind: 0
+    minValue: 5
+    maxValue: 50
+  description: Consumed on use. Instantly repairs the hull for 5 to 50 health.
+  isConsumable: 1

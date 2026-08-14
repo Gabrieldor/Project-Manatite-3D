@@ -19810,6 +19810,7 @@ GameObject:
   - component: {fileID: 919132149397901020}
   - component: {fileID: 919132149397901021}
   - component: {fileID: 919132149397901022}
+  - component: {fileID: 919132149397901023}
   m_Layer: 0
   m_Name: NavePrincipal
   m_TagString: Player
@@ -19945,11 +19946,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3b73795710bc194ca60febd633cbd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Manatite.Runtime::Manatite.Player.PlayerInventory
-  startingInventoryItems:
-  - {fileID: 11400000, guid: 2c438fa4e92b7484f9cd0aa58f452670, type: 2}
-  - {fileID: 11400000, guid: fe0f208ec385f9e42bd0d3116ab83224, type: 2}
-  - {fileID: 11400000, guid: 91f3370a5ad3bbf4480fc56b72528317, type: 2}
-  - {fileID: 11400000, guid: bc962ac82a914244d844cb48950e8a7b, type: 2}
+  startingInventoryItems: []
   chipDatabase: {fileID: 11400000, guid: 168e10b2fa963dc4e8d3877459061b10, type: 2}
 --- !u!114 &919132149397901022
 MonoBehaviour:
@@ -19973,6 +19970,18 @@ MonoBehaviour:
   minVolumeFraction: 0.15
   inputThreshold: 0.01
   fadeOutSeconds: 0.15
+--- !u!114 &919132149397901023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132149397901013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93a89260b2e063a47b10b5b0b2edae20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Manatite.Runtime::Manatite.Player.PlayerHealthChipBridge
 --- !u!4 &1151388028925486391
 Transform:
   m_ObjectHideFlags: 0

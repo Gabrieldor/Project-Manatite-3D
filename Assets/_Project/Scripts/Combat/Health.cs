@@ -21,6 +21,10 @@ namespace Manatite.Combat
         public int Current => _current;
         public int Max => _maxHealthOverride ?? (data != null ? data.MaxHealth : 0);
 
+        /// <summary>Max HP ignoring any <see cref="SetMaxHealth"/> override — the figure a chip's
+        /// bonus should be computed against, so re-equipping never compounds onto a prior bonus.</summary>
+        public int BaseMax => data != null ? data.MaxHealth : 0;
+
         /// <summary>False once dead and pooled/deactivated. A lethal hit can pool-release this
         /// GameObject synchronously (Health.OnDied -> ... -> SetActive(false)) before the code
         /// that dealt it finishes running, so any status/debuff effect should check this before
@@ -44,6 +48,17 @@ namespace Manatite.Combat
             OnDamaged?.Invoke(_current, Max);
 
             if (_current <= 0) OnDied?.Invoke();
+        }
+
+        /// <summary>Restores HP, clamped to <see cref="Max"/> (e.g. a consumable repair chip).
+        /// Reuses <see cref="OnDamaged"/> (a "health value changed" signal despite the name) so
+        /// listeners like the damage screen vignette stay in sync on a heal too.</summary>
+        public void Heal(int amount)
+        {
+            if (amount <= 0 || _current <= 0) return;
+
+            _current = Mathf.Min(_current + amount, Max);
+            OnDamaged?.Invoke(_current, Max);
         }
     }
 }

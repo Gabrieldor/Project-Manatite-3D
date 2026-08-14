@@ -87,6 +87,14 @@ namespace Manatite.Player
 
         public bool IsSlotEmpty(bool equip, int index) => GetSlot(equip, index) == null;
 
+        /// <summary>Clears a slot outright (no swap partner) — used to consume a chip like the
+        /// repair chip, which disappears on use rather than moving elsewhere.</summary>
+        public void RemoveSlot(bool equip, int index)
+        {
+            SlotsFor(equip)[index] = null;
+            OnInventoryChanged?.Invoke();
+        }
+
         public void TrySwap(bool fromEquip, int fromIndex, bool toEquip, int toIndex)
         {
             ChipInstance[] from = SlotsFor(fromEquip);

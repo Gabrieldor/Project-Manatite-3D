@@ -31,6 +31,7 @@ namespace Manatite.Player
         [SerializeField] private TargetLock targetLock;
 
         private Rigidbody _rb;
+        private PlayerInventory _inventory;
         private InputActionMap _shipMap;
         private InputAction _move;   // Vector2: x=strafe, y=forward
         private InputAction _look;   // Vector2: x=yaw, y=pitch
@@ -56,6 +57,7 @@ namespace Manatite.Player
             _rb = GetComponent<Rigidbody>();
             _rb.useGravity = useGravity;
             _rb.interpolation = interpolation;
+            _inventory = GetComponentInParent<PlayerInventory>();
 
             ApplyData();
 
@@ -121,18 +123,26 @@ namespace Manatite.Player
             ElevateInput = elevate;
             IsThrusting = move.sqrMagnitude > 0.0001f || elevate * elevate > 0.0001f;
 
+            // Equipped MoveSpeed chips (e.g. the speed chip's boost, the reflect chip's penalty)
+            // scale thrust and the speed cap together, so the ship both accelerates and tops
+            // out faster/slower rather than just raising/lowering a distant ceiling.
+            float speedMult = _inventory != null
+                ? _inventory.GetModifiedFloat(ChipStatTarget.MoveSpeed, 1f)
+                : 1f;
+
             // --- Translation (ship-local) ---
             Vector3 thrust = new Vector3(
-                move.x * data.StrafeThrust,   // strafe left/right
-                elevate * data.VerticalThrust, // RT up / LT down
-                move.y * data.ForwardThrust);  // forward/back
+                move.x * data.StrafeThrust * speedMult,   // strafe left/right
+                elevate * data.VerticalThrust * speedMult, // RT up / LT down
+                move.y * data.ForwardThrust * speedMult);  // forward/back
             _rb.AddRelativeForce(thrust, ForceMode.Acceleration);
 
-            if (data.MaxSpeed > 0f)
+            float maxSpeed = data.MaxSpeed * speedMult;
+            if (maxSpeed > 0f)
             {
                 Vector3 v = _rb.linearVelocity;
-                if (v.sqrMagnitude > data.MaxSpeed * data.MaxSpeed)
-                    _rb.linearVelocity = v.normalized * data.MaxSpeed;
+                if (v.sqrMagnitude > maxSpeed * maxSpeed)
+                    _rb.linearVelocity = v.normalized * maxSpeed;
             }
 
             // --- Rotation (ship-local torque) ---

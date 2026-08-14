@@ -1,3 +1,5 @@
+using Manatite.Combat;
+using Manatite.Core;
 using Manatite.Data;
 using Manatite.Weapons;
 using UnityEngine;
@@ -57,7 +59,7 @@ namespace Manatite.Enemies
 
                 Fire(point, target);
                 _firePointIndex = (index + 1) % firePoints.Length;
-                _cooldownRemaining = 1f / Mathf.Max(data.FireRate, 0.0001f);
+                _cooldownRemaining = 1f / Mathf.Max(data.FireRate * DifficultyScale.Multiplier, 0.0001f);
                 return;
             }
         }
@@ -75,7 +77,9 @@ namespace Manatite.Enemies
         private void Fire(Transform point, Transform target)
         {
             Quaternion rotation = ComputeAimRotation(point, target);
-            ProjectileLauncher.Fire(data.ProjectilePrefab, data.ProjectileSpeed, data.ProjectileLifetime, point.position, rotation, _ownerCollider, EffectProfile.BaseDamageOnly(data.Damage), projectileScale: data.Scale);
+            int scaledDamage = Mathf.CeilToInt(data.Damage * DifficultyScale.Multiplier);
+            Health attackerHealth = _controller != null ? _controller.Health : null;
+            ProjectileLauncher.Fire(data.ProjectilePrefab, data.ProjectileSpeed, data.ProjectileLifetime, point.position, rotation, _ownerCollider, EffectProfile.BaseDamageOnly(scaledDamage), projectileScale: data.Scale, attackerHealth: attackerHealth);
         }
 
         private Quaternion ComputeAimRotation(Transform point, Transform target)

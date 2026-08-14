@@ -32,6 +32,17 @@ namespace Manatite.Data
         private const float LightningChainCountMax = 15f;
         private const float LightningDamageMin = 0f;
         private const float LightningDamageMax = 15f;
+        // Flat HP bonus, not a small stat delta like Flat above — mirrors the SplashRadius/
+        // Corrosion/Lightning reasoning.
+        private const float MaxHealthMin = 0f;
+        private const float MaxHealthMax = 30f;
+        // Stored as a raw probability (0..1), not a Flat stat delta or a Multiplier — summed via
+        // GetModifiedFloat(ReflectChance, 0f) so only the Flat pool applies.
+        private const float ReflectChanceMin = 0f;
+        private const float ReflectChanceMax = 1f;
+        // Flat HP restored when the consumable chip carrying this is used.
+        private const float HealAmountMin = 0f;
+        private const float HealAmountMax = 50f;
 
         [SerializeField] private ChipStatTarget statTarget;
         [SerializeField] private ChipValueKind valueKind;
@@ -88,6 +99,21 @@ namespace Manatite.Data
             {
                 lo = LightningDamageMin;
                 hi = LightningDamageMax;
+            }
+            else if (statTarget == ChipStatTarget.MaxHealth)
+            {
+                lo = MaxHealthMin;
+                hi = MaxHealthMax;
+            }
+            else if (statTarget == ChipStatTarget.ReflectChance)
+            {
+                lo = ReflectChanceMin;
+                hi = ReflectChanceMax;
+            }
+            else if (statTarget == ChipStatTarget.HealAmount)
+            {
+                lo = HealAmountMin;
+                hi = HealAmountMax;
             }
             else
             {

@@ -1,4 +1,5 @@
 using Manatite.Combat;
+using Manatite.Core;
 using Manatite.Environment;
 using Manatite.Player;
 using UnityEngine;
@@ -27,8 +28,13 @@ namespace Manatite.Core.SaveSystem
 
         private void Start()
         {
-            if (PendingLoad.Data == null) return;
+            if (PendingLoad.Data == null)
+            {
+                DifficultyScale.Tier = 0;
+                return;
+            }
 
+            DifficultyScale.Tier = PendingLoad.Data.difficultyTier;
             ApplyPlayerState(PendingLoad.Data.player);
             if (playerInventory != null)
                 playerInventory.RestoreState(PendingLoad.Data.inventory);
@@ -53,6 +59,8 @@ namespace Manatite.Core.SaveSystem
 
             if (playerInventory != null)
                 data.inventory = playerInventory.CaptureState();
+
+            data.difficultyTier = DifficultyScale.Tier;
 
             foreach (PlanetState state in FindObjectsByType<PlanetState>(FindObjectsSortMode.None))
             {

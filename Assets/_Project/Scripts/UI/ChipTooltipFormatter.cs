@@ -27,15 +27,20 @@ namespace Manatite.UI
                 string colorHex = ColorUtility.ToHtmlStringRGB(color);
                 string label = GetStatDisplayName(modifiers[i].StatTarget);
 
-                if (modifiers[i].ValueKind == ChipValueKind.Flat)
-                {
-                    string text = string.Format(CultureInfo.InvariantCulture, "{0:+0.#;-0.#;0} {1}", value, label);
-                    flatLines.Add($"<color=#{colorHex}>{text}</color>");
-                }
-                else
+                // ReflectChance is stored as a raw 0..1 probability via the Flat pool (see
+                // ChipModifier), but reads like a percent stat to the player.
+                bool displayAsPercent = modifiers[i].ValueKind == ChipValueKind.Multiplier
+                    || modifiers[i].StatTarget == ChipStatTarget.ReflectChance;
+
+                if (displayAsPercent)
                 {
                     string text = string.Format(CultureInfo.InvariantCulture, "{0:+0.#;-0.#;0}% {1}", value * 100f, label);
                     percentLines.Add($"<color=#{colorHex}>{text}</color>");
+                }
+                else
+                {
+                    string text = string.Format(CultureInfo.InvariantCulture, "{0:+0.#;-0.#;0} {1}", value, label);
+                    flatLines.Add($"<color=#{colorHex}>{text}</color>");
                 }
             }
 
@@ -55,6 +60,10 @@ namespace Manatite.UI
                 case ChipStatTarget.LightningRange: return "Lightning Range";
                 case ChipStatTarget.LightningChainCount: return "Lightning Chain Count";
                 case ChipStatTarget.LightningDamage: return "Lightning Damage";
+                case ChipStatTarget.MoveSpeed: return "Move Speed";
+                case ChipStatTarget.MaxHealth: return "Max Health";
+                case ChipStatTarget.ReflectChance: return "Reflect Chance";
+                case ChipStatTarget.HealAmount: return "Repair Amount";
                 default: return target.ToString();
             }
         }

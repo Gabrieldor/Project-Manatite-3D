@@ -19,7 +19,7 @@ MonoBehaviour:
       - {fileID: 8300000, guid: 43e2997ede26edb469177465fff1849a, type: 3}
       - {fileID: 8300000, guid: 0301f0643184b22499da0866d5abe656, type: 3}
       - {fileID: 8300000, guid: 0301f0643184b22499da0866d5abe656, type: 3}
-      volumeRange: {x: 1, y: 1}
+      volumeRange: {x: 0.2, y: 0.2}
       pitchRange: {x: 0.9, y: 1.1}
       loop: 0
       loopStart: 0
@@ -37,7 +37,7 @@ MonoBehaviour:
     data:
       clips:
       - {fileID: 8300000, guid: 9dc8a5ae30d7df341bbde4120c7400ba, type: 3}
-      volumeRange: {x: 1, y: 1}
+      volumeRange: {x: 0.2, y: 0.2}
       pitchRange: {x: 0.9, y: 1.1}
       loop: 0
       loopStart: 0
@@ -57,7 +57,7 @@ MonoBehaviour:
       - {fileID: 8300000, guid: b662a229d627d0a46b03546220463c9b, type: 3}
       - {fileID: 8300000, guid: fe0e0c9015656d646a9f2e1ca6a305e7, type: 3}
       - {fileID: 8300000, guid: 77c549af7b599fd40bea0659df92b617, type: 3}
-      volumeRange: {x: 0.1, y: 0.1}
+      volumeRange: {x: 0.2, y: 0.2}
       pitchRange: {x: 0.9, y: 1.1}
       loop: 0
       loopStart: 0

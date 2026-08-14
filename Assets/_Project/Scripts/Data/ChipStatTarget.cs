@@ -9,6 +9,10 @@ namespace Manatite.Data
         CorrosionDps,
         LightningRange,
         LightningChainCount,
-        LightningDamage
+        LightningDamage,
+        MoveSpeed,
+        MaxHealth,
+        ReflectChance,
+        HealAmount
     }
 }

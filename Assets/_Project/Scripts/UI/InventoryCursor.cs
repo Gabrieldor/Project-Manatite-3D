@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Manatite.Audio;
+using Manatite.Combat;
 using Manatite.Core;
+using Manatite.Data;
 using Manatite.Player;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -224,7 +226,15 @@ namespace Manatite.UI
 
             if (_heldFrom == null)
             {
-                if (inventory.IsSlotEmpty(current.isEquip, current.index)) return;
+                ChipInstance chip = inventory.GetSlot(current.isEquip, current.index);
+                if (chip == null) return;
+
+                if (chip.Data.IsConsumable)
+                {
+                    Consume(chip, current.isEquip, current.index);
+                    return;
+                }
+
                 _heldFrom = current;
                 BeginBlink(GetCurrentSlot());
                 AudioManager.PlaySfx(SfxCue.Confirm);
@@ -244,6 +254,20 @@ namespace Manatite.UI
             if (current.isEquip) AudioManager.PlaySfx(SfxCue.ChipEquip);
             ClearSelection();
             _heldFrom = null;
+            RefreshHover();
+        }
+
+        /// <summary>Applies a consumable chip's effect once (currently only a flat heal, via its
+        /// <see cref="ChipStatTarget.HealAmount"/> modifier) and removes it from its slot,
+        /// bypassing the normal pick-up/swap flow entirely.</summary>
+        private void Consume(ChipInstance chip, bool isEquip, int index)
+        {
+            Health health = inventory.GetComponent<Health>();
+            if (health != null && chip.Data.Modifiers.Length > 0)
+                health.Heal(Mathf.RoundToInt(chip.RolledValues[0]));
+
+            inventory.RemoveSlot(isEquip, index);
+            AudioManager.PlaySfx(SfxCue.Confirm);
             RefreshHover();
         }
 

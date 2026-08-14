@@ -93,23 +93,27 @@ namespace Manatite.Enemies
             EnemySpawnEntry[] entries = spawnData.Entries;
             if (entries == null || entries.Length == 0) yield break;
 
+            // Rounded up per entry rather than once against a summed total, so a 1-count
+            // entry still gets its own +1 at tier 1 instead of being lost to rounding.
+            var scaledCounts = new int[entries.Length];
+            for (int i = 0; i < entries.Length; i++)
+                scaledCounts[i] = Mathf.CeilToInt(entries[i].count * DifficultyScale.Multiplier);
+
             _remainingAlive = 0;
-            foreach (EnemySpawnEntry entry in entries)
-                _remainingAlive += entry.count;
+            foreach (int count in scaledCounts)
+                _remainingAlive += count;
 
             if (spawnData.SpawnMode == EnemySpawnMode.AllAtOnce)
             {
                 // Single batch, so one read of the player's position covers the whole spawn.
                 Vector3 backDirection = BackDirectionFrom(player.position);
-                foreach (EnemySpawnEntry entry in entries)
-                    for (int i = 0; i < entry.count; i++)
-                        SpawnOne(entry.enemyPrefab, player, backDirection);
+                for (int i = 0; i < entries.Length; i++)
+                    for (int j = 0; j < scaledCounts[i]; j++)
+                        SpawnOne(entries[i].enemyPrefab, player, backDirection);
             }
             else
             {
-                var remaining = new int[entries.Length];
-                for (int i = 0; i < remaining.Length; i++)
-                    remaining[i] = entries[i].count;
+                var remaining = (int[])scaledCounts.Clone();
 
                 int totalRemaining = TotalOf(remaining);
                 while (totalRemaining > 0)

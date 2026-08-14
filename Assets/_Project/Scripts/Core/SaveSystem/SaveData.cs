@@ -12,6 +12,7 @@ namespace Manatite.Core.SaveSystem
         public PlayerSaveData player = new PlayerSaveData();
         public List<PlanetSaveData> planets = new List<PlanetSaveData>();
         public InventorySaveData inventory = new InventorySaveData();
+        public int difficultyTier;
     }
 
     [Serializable]
