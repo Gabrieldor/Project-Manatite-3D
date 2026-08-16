@@ -1,4 +1,3 @@
-using Manatite.Core;
 using Manatite.Data;
 using Manatite.Player;
 using UnityEditor;
@@ -54,17 +53,13 @@ namespace Manatite.Editor
 
         private static void Grant(ChipData chip)
         {
-            GameObject player = GameObject.FindGameObjectWithTag(GameLayers.PlayerTag);
-            if (player == null)
-            {
-                Debug.LogWarning("ChipSpawnerWindow: no GameObject tagged 'Player' found in the scene.");
-                return;
-            }
-
-            PlayerInventory inventory = player.GetComponentInChildren<PlayerInventory>();
+            // Not found via the "Player" tag: multiple colliders on the ship (e.g. hitbox
+            // sub-objects) are tagged "Player" for hit detection, so FindGameObjectWithTag can
+            // return one of those instead of the ship root and miss PlayerInventory entirely.
+            PlayerInventory inventory = Object.FindFirstObjectByType<PlayerInventory>();
             if (inventory == null)
             {
-                Debug.LogWarning("ChipSpawnerWindow: no PlayerInventory found on/under the 'Player' GameObject.");
+                Debug.LogWarning("ChipSpawnerWindow: no PlayerInventory found in the scene.");
                 return;
             }
 
