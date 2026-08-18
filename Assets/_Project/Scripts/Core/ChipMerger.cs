@@ -28,7 +28,7 @@ namespace Manatite.Core
             }
 
             string name = $"{a.Data.DisplayName} + {b.Data.DisplayName}";
-            string description = $"{a.Data.Description}\n{b.Data.Description}".Trim();
+            string description = CombineDescriptions(a.Data.Description, b.Data.Description);
             // Placeholder until real fused-chip art exists — reuses the first chip's icon
             // rather than inventing new art.
             Sprite icon = a.Data.Icon;
@@ -38,6 +38,19 @@ namespace Manatite.Core
 
             ChipData merged = ChipData.CreateMerged(name, icon, modifiers, description, iconSourceId);
             return new ChipInstance(merged, rolledValues);
+        }
+
+        // Splits both descriptions into lines and keeps only the first occurrence of each,
+        // so re-merging chips that already share a line (same chip type, or a merged chip
+        // re-merged with one of its own donors) doesn't repeat that sentence.
+        private static string CombineDescriptions(string a, string b)
+        {
+            var lines = new List<string>(a.Split('\n'));
+            foreach (string line in b.Split('\n'))
+            {
+                if (!lines.Contains(line)) lines.Add(line);
+            }
+            return string.Join("\n", lines).Trim();
         }
 
         private static void AddOrCombine(List<(ChipModifier Modifier, float Value)> rows, ChipInstance chip)

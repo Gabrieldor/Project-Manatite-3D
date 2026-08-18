@@ -19,7 +19,7 @@ MonoBehaviour:
     count: 7
   - enemyPrefab: {fileID: 7017090798555957920, guid: e02a7fe87a75a5c4c846241c59c717bc, type: 3}
     count: 3
-  spawnMode: 1
+  spawnMode: 0
   waveSize: 5
   timeBetweenWaves: 2
   minSpawnRadius: 500

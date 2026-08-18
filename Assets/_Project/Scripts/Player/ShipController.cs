@@ -80,12 +80,30 @@ namespace Manatite.Player
         {
             _shipMap?.Enable();
             if (data != null) data.Changed += ApplyData;
+            LockCursor();
         }
 
         private void OnDisable()
         {
             _shipMap?.Disable();
             if (data != null) data.Changed -= ApplyData;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+
+        /// <summary>Confines the OS cursor to the window (and hides it) so mouse Look can
+        /// accumulate delta indefinitely instead of stalling the moment the cursor wanders off
+        /// the window or hits a screen edge — otherwise identical in a build, windowed or not.
+        /// The OS releases the lock on alt-tab/focus loss, so it's re-applied on focus regain.</summary>
+        private void LockCursor()
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            if (hasFocus && isActiveAndEnabled) LockCursor();
         }
 
         /// <summary>Applies the fields that are otherwise only read once (not every

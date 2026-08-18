@@ -72,6 +72,14 @@ namespace Manatite.UI
                 return;
             }
 
+            // Escape is bound to both Pause and Cancel, so a keyboard Esc press fires both
+            // handlers — Pause's own toggle already closes the panel, so skip here to avoid
+            // racing it (Cancel closes, then Pause's toggle immediately reopens). Other Cancel
+            // bindings (gamepad East) have no such overlap and still close the panel directly.
+            if (ctx.control is UnityEngine.InputSystem.Controls.KeyControl keyControl
+                && keyControl.keyCode == Key.Escape)
+                return;
+
             if (_isPaused) SetPaused(false);
         }
 
