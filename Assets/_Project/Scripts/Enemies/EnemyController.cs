@@ -24,6 +24,7 @@ namespace Manatite.Enemies
 
         private bool _emerging;
         private Vector3 _emergeDirection;
+        private Quaternion _emergeVisualRotation;
         private Vector3 _planetCenter;
         private float _emergeExitDistance;
 
@@ -99,6 +100,15 @@ namespace Manatite.Enemies
                 float spawnDistance = fromPlanet.magnitude;
                 _emergeDirection = spawnDistance > 0.0001f ? fromPlanet / spawnDistance : transform.forward;
                 _emergeExitDistance = spawnDistance + (data != null ? data.EmergeBurstDistance : 0f);
+
+                // Facing is randomized independently of the burst direction below so enemies
+                // don't all visibly face away from the player just because they're clustered
+                // behind the planet's far side (their burst still moves radially outward,
+                // clear of the planet mesh, regardless of which way they're facing).
+                Vector3 randomFacing = UnityEngine.Random.onUnitSphere;
+                Vector3 facingUp = Mathf.Abs(Vector3.Dot(randomFacing, Vector3.up)) > 0.99f ? Vector3.forward : Vector3.up;
+                _emergeVisualRotation = Quaternion.LookRotation(randomFacing, facingUp);
+                transform.rotation = _emergeVisualRotation;
             }
         }
 
@@ -140,8 +150,7 @@ namespace Manatite.Enemies
         /// <see cref="EnemyData.EmergeBurstDistance"/> beyond its own spawn point.</summary>
         private void UpdateEmerge()
         {
-            Vector3 up = Mathf.Abs(Vector3.Dot(_emergeDirection, Vector3.up)) > 0.99f ? Vector3.forward : Vector3.up;
-            _rb.MoveRotation(Quaternion.LookRotation(_emergeDirection, up));
+            _rb.MoveRotation(_emergeVisualRotation);
             _rb.linearVelocity = _emergeDirection * data.EmergeSpeed;
 
             if (Vector3.Distance(transform.position, _planetCenter) >= _emergeExitDistance)

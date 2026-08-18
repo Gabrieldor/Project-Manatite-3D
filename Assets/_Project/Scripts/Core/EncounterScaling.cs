@@ -13,7 +13,7 @@ namespace Manatite.Core
     public static class EncounterScaling
     {
         private const int EnemiesPerClear = 5;
-        private const int WaveSizeStepPerClear = 3;
+        private const int WaveSizeStepPerClear = 2;
 
         public static int BasicBonus { get; set; }
         public static int MediumBonus { get; set; }

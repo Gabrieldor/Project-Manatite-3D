@@ -231,7 +231,10 @@ namespace Manatite.UI
             }
 
             int inventoryIndex = _pickerRow * InventoryCols + _pickerCol;
-            inventory.SwapMergeWithInventory(_pendingMergeIndex, inventoryIndex);
+            // A consumable chip (e.g. Repair) can't be placed in the merge row — refused below
+            // the picker stays open so the player can pick a different chip instead.
+            if (!inventory.SwapMergeWithInventory(_pendingMergeIndex, inventoryIndex)) return;
+
             AudioManager.PlaySfx(SfxCue.Confirm);
             ClosePicker();
         }

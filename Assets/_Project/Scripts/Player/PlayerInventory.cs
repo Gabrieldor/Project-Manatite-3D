@@ -138,12 +138,19 @@ namespace Manatite.Player
 
         /// <summary>Swaps a merge slot's contents with an inventory slot's. Symmetric, so this
         /// single call covers placing a chip into an empty merge slot, replacing whatever was
-        /// already there, and removing one (by targeting an empty inventory slot).</summary>
-        public void SwapMergeWithInventory(int mergeIndex, int inventoryIndex)
+        /// already there, and removing one (by targeting an empty inventory slot). Refuses the
+        /// swap (returns false, no state change) if the inventory chip moving into the merge
+        /// slot is consumable (e.g. Repair) — a one-shot-use chip has nothing meaningful to
+        /// fuse into another chip's stats.</summary>
+        public bool SwapMergeWithInventory(int mergeIndex, int inventoryIndex)
         {
+            ChipInstance incoming = _inventorySlots[inventoryIndex];
+            if (incoming != null && incoming.Data.IsConsumable) return false;
+
             (_mergeSlots[mergeIndex], _inventorySlots[inventoryIndex]) = (_inventorySlots[inventoryIndex], _mergeSlots[mergeIndex]);
             _mergeSourceIndex[mergeIndex] = _mergeSlots[mergeIndex] != null ? inventoryIndex : -1;
             OnInventoryChanged?.Invoke();
+            return true;
         }
 
         /// <summary>Finds the first empty inventory slot, or -1 if none.</summary>

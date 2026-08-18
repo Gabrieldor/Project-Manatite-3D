@@ -24,6 +24,8 @@ namespace Manatite.Core.SaveSystem
     {
         public int health;
         public int maxHealth;
+        public Vector3 position;
+        public Quaternion rotation;
     }
 
     [Serializable]

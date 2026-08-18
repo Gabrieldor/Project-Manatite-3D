@@ -18,6 +18,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b2f5067a11d5daa4faf3233147cf473a, type: 2}
   planetCount: 3
   fieldCenter: {x: 275, y: 0, z: 137.5}
-  fieldHalfExtents: {x: 4675, y: 3300, z: 5087.5}
+  fieldHalfExtents: {x: 2337.5, y: 1650, z: 2543.75}
   minSeparationMultiplier: 1.2
+  minAbsoluteSeparation: 1500
   maxPlacementAttempts: 20

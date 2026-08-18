@@ -30,6 +30,9 @@ namespace Manatite.Environment
             "the ship's mesh children also carry the Player tag, which makes " +
             "GameObject.FindGameObjectWithTag ambiguous.")]
         [SerializeField] private Rigidbody playerRigidbody;
+        [Tooltip("Plays a fade-to-black-and-back around a full field regeneration. Optional — " +
+            "if unassigned, the field swaps instantly with no transition.")]
+        [SerializeField] private SolarSystemTransitionUI transitionUI;
 
         /// <summary>Fired whenever a spawned planet's encounter is fully cleared. This
         /// script only reports its own domain (a planet became beaten) — it has no idea
@@ -92,15 +95,26 @@ namespace Manatite.Environment
             return centers;
         }
 
-        /// <summary>Called once the last still-active planet in the current batch is beaten:
-        /// bumps the run's persistent difficulty tier (see <see cref="DifficultyScale"/>,
-        /// read by <see cref="EnemySpawnZone"/>/<see cref="Enemies.EnemyController"/>/
-        /// <see cref="Enemies.EnemyWeapon"/>), tears down the fully-looted batch, and scatters a
-        /// fresh one centered on the player's current position so the run continues endlessly.</summary>
+        /// <summary>Called once the last still-active planet in the current batch is beaten.
+        /// Routes the actual swap through <see cref="transitionUI"/>'s fade-to-black-and-back
+        /// (see <see cref="DoRegenerate"/>) so the teardown/respawn never happens on-screen;
+        /// falls back to swapping instantly if no transition is assigned.</summary>
         private void RegenerateField()
         {
             if (spawnData == null) return;
 
+            if (transitionUI != null)
+                transitionUI.Play(DoRegenerate);
+            else
+                DoRegenerate();
+        }
+
+        /// <summary>Bumps the run's persistent difficulty tier (see <see cref="DifficultyScale"/>,
+        /// read by <see cref="EnemySpawnZone"/>/<see cref="Enemies.EnemyController"/>/
+        /// <see cref="Enemies.EnemyWeapon"/>), tears down the fully-looted batch, and scatters a
+        /// fresh one centered on the player's current position so the run continues endlessly.</summary>
+        private void DoRegenerate()
+        {
             DifficultyScale.Tier++;
 
             foreach (PlanetState planet in _activePlanets)
@@ -126,7 +140,6 @@ namespace Manatite.Environment
             if (planets == null || planets.Count == 0) return;
 
             PlanetData[] types = spawnData != null ? spawnData.PlanetTypes : null;
-            var centers = new Vector3[planets.Count];
 
             for (int i = 0; i < planets.Count; i++)
             {
@@ -136,10 +149,7 @@ namespace Manatite.Environment
 
                 float radius = saved.scale * 0.5f;
                 SpawnPlanet(type, saved.position, saved.rotation, saved.scale, radius, saved.planetId, saved.zoneRadius, saved.beaten, saved.hasShop);
-                centers[i] = saved.position;
             }
-
-            FacePlayerAtNearestPlanet(centers);
         }
 
         private static PlanetData FindTypeById(PlanetData[] types, string typeId)

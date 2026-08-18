@@ -16,6 +16,15 @@ namespace Manatite.Core.SaveSystem
         [Tooltip("Autosaves whenever this reports a planet was beaten.")]
         [SerializeField] private PlanetSpawner planetSpawner;
 
+        /// <summary>Resolved from <see cref="playerHealth"/>'s GameObject rather than a
+        /// separate serialized field — the ship rig carries both on its root.</summary>
+        private Rigidbody _playerRigidbody;
+
+        private void Awake()
+        {
+            if (playerHealth != null) _playerRigidbody = playerHealth.GetComponent<Rigidbody>();
+        }
+
         private void OnEnable()
         {
             if (planetSpawner != null) planetSpawner.OnPlanetBeaten += Save;
@@ -50,6 +59,12 @@ namespace Manatite.Core.SaveSystem
             if (playerHealth == null || data == null) return;
             playerHealth.SetMaxHealth(data.maxHealth);
             playerHealth.SetCurrent(data.health);
+
+            if (_playerRigidbody != null)
+            {
+                _playerRigidbody.position = data.position;
+                _playerRigidbody.rotation = data.rotation;
+            }
         }
 
         public void Save()
@@ -60,6 +75,12 @@ namespace Manatite.Core.SaveSystem
             {
                 data.player.health = playerHealth.Current;
                 data.player.maxHealth = playerHealth.Max;
+            }
+
+            if (_playerRigidbody != null)
+            {
+                data.player.position = _playerRigidbody.position;
+                data.player.rotation = _playerRigidbody.rotation;
             }
 
             if (playerInventory != null)
