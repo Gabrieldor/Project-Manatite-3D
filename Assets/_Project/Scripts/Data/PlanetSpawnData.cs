@@ -21,6 +21,9 @@ namespace Manatite.Data
         [Header("Placement")]
         [Tooltip("Minimum gap between planet surfaces, as a multiple of the sum of their radii.")]
         [SerializeField] private float minSeparationMultiplier = 1.2f;
+        [Tooltip("Minimum center-to-center distance between any two planets, regardless of their " +
+            "radii. Takes precedence over MinSeparationMultiplier whenever it would require a larger gap.")]
+        [SerializeField] private float minAbsoluteSeparation = 1500f;
         [SerializeField] private int maxPlacementAttempts = 20;
 
         public PlanetData[] PlanetTypes => planetTypes;
@@ -28,6 +31,7 @@ namespace Manatite.Data
         public Vector3 FieldCenter => fieldCenter;
         public Vector3 FieldHalfExtents => fieldHalfExtents;
         public float MinSeparationMultiplier => minSeparationMultiplier;
+        public float MinAbsoluteSeparation => minAbsoluteSeparation;
         public int MaxPlacementAttempts => maxPlacementAttempts;
     }
 }

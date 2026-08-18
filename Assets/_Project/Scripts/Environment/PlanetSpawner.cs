@@ -191,7 +191,9 @@ namespace Manatite.Environment
         {
             for (int i = 0; i < placedCount; i++)
             {
-                float minDistance = (radius + radii[i]) * spawnData.MinSeparationMultiplier;
+                float minDistance = Mathf.Max(
+                    (radius + radii[i]) * spawnData.MinSeparationMultiplier,
+                    spawnData.MinAbsoluteSeparation);
                 if (Vector3.SqrMagnitude(position - centers[i]) < minDistance * minDistance)
                     return false;
             }
@@ -244,6 +246,10 @@ namespace Manatite.Environment
                     clearedRing.Show();
                 RollLoot(type.LootTable);
                 RollShop(type.LootTable, instance.transform, radius);
+
+                // Escalates every planet cleared (not just a full field), so future
+                // encounters get harder gradually rather than in jumps every 3 planets.
+                EncounterScaling.OnPlanetCleared();
 
                 // Order matters: regenerate (and bump the difficulty tier) before the
                 // OnPlanetBeaten autosave below, so the save captures the new field/tier

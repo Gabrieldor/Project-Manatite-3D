@@ -95,9 +95,11 @@ namespace Manatite.Enemies
 
             // Rounded up per entry rather than once against a summed total, so a 1-count
             // entry still gets its own +1 at tier 1 instead of being lost to rounding.
+            // EncounterScaling's per-clear bonus is added flat afterward, not multiplied.
             var scaledCounts = new int[entries.Length];
             for (int i = 0; i < entries.Length; i++)
-                scaledCounts[i] = Mathf.CeilToInt(entries[i].count * DifficultyScale.Multiplier);
+                scaledCounts[i] = Mathf.CeilToInt(entries[i].count * DifficultyScale.Multiplier)
+                    + BonusForPrefab(entries[i].enemyPrefab);
 
             _remainingAlive = 0;
             foreach (int count in scaledCounts)
@@ -123,7 +125,7 @@ namespace Manatite.Enemies
                     // the player has actually flown to since the encounter started.
                     Vector3 backDirection = BackDirectionFrom(player.position);
                     _currentWaveAlive = 0;
-                    int toSpawn = Mathf.Min(spawnData.WaveSize, totalRemaining);
+                    int toSpawn = Mathf.Min(spawnData.WaveSize + EncounterScaling.WaveSizeBonus, totalRemaining);
                     for (int spawned = 0; spawned < toSpawn; spawned++)
                     {
                         int entryIndex = NextEntryWithRemaining(remaining);
@@ -210,6 +212,20 @@ namespace Manatite.Enemies
                 }
             };
             health.OnDied += onDied;
+        }
+
+        /// <summary>Maps a roster entry to its <see cref="EncounterScaling"/> per-clear bonus
+        /// by prefab name (Basic/Medium/Large) — matches the tier naming convention used by
+        /// the <c>BasicEnemy</c>/<c>MediumEnemy</c>/<c>LargeEnemy</c> prefabs and by
+        /// EnemySpawnerWindow. Entries that don't match any tier get no bonus.</summary>
+        private static int BonusForPrefab(GameObject prefab)
+        {
+            if (prefab == null) return 0;
+            string name = prefab.name;
+            if (name.StartsWith("Basic")) return EncounterScaling.BasicBonus;
+            if (name.StartsWith("Medium")) return EncounterScaling.MediumBonus;
+            if (name.StartsWith("Large")) return EncounterScaling.LargeBonus;
+            return 0;
         }
 
         private static int TotalOf(int[] remaining)

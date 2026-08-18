@@ -31,10 +31,15 @@ namespace Manatite.Core.SaveSystem
             if (PendingLoad.Data == null)
             {
                 DifficultyScale.Tier = 0;
+                EncounterScaling.Reset();
                 return;
             }
 
             DifficultyScale.Tier = PendingLoad.Data.difficultyTier;
+            EncounterScaling.BasicBonus = PendingLoad.Data.basicEnemyBonus;
+            EncounterScaling.MediumBonus = PendingLoad.Data.mediumEnemyBonus;
+            EncounterScaling.LargeBonus = PendingLoad.Data.largeEnemyBonus;
+            EncounterScaling.WaveSizeBonus = PendingLoad.Data.waveSizeBonus;
             ApplyPlayerState(PendingLoad.Data.player);
             if (playerInventory != null)
                 playerInventory.RestoreState(PendingLoad.Data.inventory);
@@ -61,6 +66,10 @@ namespace Manatite.Core.SaveSystem
                 data.inventory = playerInventory.CaptureState();
 
             data.difficultyTier = DifficultyScale.Tier;
+            data.basicEnemyBonus = EncounterScaling.BasicBonus;
+            data.mediumEnemyBonus = EncounterScaling.MediumBonus;
+            data.largeEnemyBonus = EncounterScaling.LargeBonus;
+            data.waveSizeBonus = EncounterScaling.WaveSizeBonus;
 
             foreach (PlanetState state in FindObjectsByType<PlanetState>(FindObjectsSortMode.None))
             {

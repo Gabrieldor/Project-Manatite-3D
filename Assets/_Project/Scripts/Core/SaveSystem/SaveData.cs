@@ -13,6 +13,10 @@ namespace Manatite.Core.SaveSystem
         public List<PlanetSaveData> planets = new List<PlanetSaveData>();
         public InventorySaveData inventory = new InventorySaveData();
         public int difficultyTier;
+        public int basicEnemyBonus;
+        public int mediumEnemyBonus;
+        public int largeEnemyBonus;
+        public int waveSizeBonus;
     }
 
     [Serializable]
